@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { Button } from './components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
 import { BibleVerseCarousel } from './components/BibleVerseCarousel.jsx'
 import { InstagramCarousel } from './components/InstagramCarousel.jsx'
-import { WhatsAppButton } from './components/WhatsAppButton.jsx'
+import { WhatsAppButton as WhatsAppButtonComponent } from './components/WhatsAppButton.jsx'
 import { ScrollReveal } from './components/ScrollReveal.jsx'
-import { Footer } from './components/Footer.jsx'
+import { Footer as FooterComponent } from './components/Footer.jsx'
 import { 
-  CheckCircle, Star, BookOpen, Users, Heart, Lightbulb, Target, Shield, Sparkles, Zap, 
+  CheckCircle, Star, BookOpen, Users, Heart, Lightbulb, Target, Shield, Sparkles, Zap, Smartphone,
   TrendingUp, X, CreditCard, QrCode, Copy, Instagram, Facebook, Mail, ExternalLink, MessageCircle,
   ArrowRight, Gift, Clock, Download, Award
 } from 'lucide-react'
@@ -19,6 +19,9 @@ import transformationIllustration from './assets/transformation-illustration.png
 import ebookCover from './assets/ebook-cover.png'
 import { contactInfo, benefits } from './content.js'
 import qrCodeAsset from './assets/qrcode-pix.png'
+
+const Footer = memo(FooterComponent);
+const WhatsAppButton = memo(WhatsAppButtonComponent);
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -33,6 +36,17 @@ function App() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768; // md breakpoint
+    if (isModalOpen && isMobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    // Cleanup function
+    return () => { document.body.style.overflow = 'auto'; };
+  }, [isModalOpen]);
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
@@ -50,16 +64,20 @@ function App() {
   };
 
   const problemIcons = {
-    "Sobrecarga": "📱", "Relacionamentos": "💔", "Falta": "🎯", 
-    "Dificuldade": "⚖️", "Busca": "👥", "Sensação": "😔"
+    "Sobrecarga": <Smartphone className="w-8 h-8 text-red-500" />,
+    "Relacionamentos": <Heart className="w-8 h-8 text-red-500" />,
+    "Falta": <Target className="w-8 h-8 text-red-500" />,
+    "Dificuldade": <BookOpen className="w-8 h-8 text-red-500" />,
+    "Busca": <Users className="w-8 h-8 text-red-500" />,
+    "Sensação": <Zap className="w-8 h-8 text-red-500" />
   };
 
   return (
     <div className="min-h-[100svh] bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 pb-16">
       {/* Header Melhorado com Carrossel de Textos Bíblicos */}
-      <header className={`bg-gradient-to-r from-amber-800 via-amber-900 to-amber-800 shadow-xl sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'py-3' : 'py-4'}`}>
+      <header className={`bg-gradient-to-r from-amber-800 via-amber-900 to-amber-800 shadow-xl sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'py-2' : 'py-3'}`}>
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 mb-2">
             <div className="flex items-center gap-3">
               <div className="hidden md:block w-10 h-10 bg-amber-200/20 rounded-lg flex items-center justify-center">
                 <BookOpen className="w-10 h-10 text-white" />
@@ -142,6 +160,7 @@ function App() {
                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500 max-w-md xl:max-w-lg">
                   <img 
                     src={heroIllustration} 
+                    loading="lazy"
                     alt="Sabedoria Ancestral e Vida Moderna" 
                     className="w-full rounded-3xl shadow-2xl border-4 border-white/50"
                   />
@@ -199,7 +218,7 @@ function App() {
                 ].map((problem, index) => (
                   <ScrollReveal key={index} direction="right" delay={index * 100}>
                     <div className="flex items-start gap-5 p-6 md:p-7 bg-gradient-to-r from-red-50 to-pink-50 rounded-xl border-l-4 border-red-500 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-                      <span className="text-4xl flex-shrink-0">{problemIcons[problem.split(' ')[0]]}</span>
+                      <div className="text-4xl flex-shrink-0 mt-1">{problemIcons[problem.split(' ')[0]]}</div>
                       <p className="text-gray-700 text-base md:text-lg leading-relaxed pt-2">{problem}</p>
                     </div>
                   </ScrollReveal>
@@ -211,6 +230,7 @@ function App() {
                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500 max-w-md xl:max-w-lg">
                   <img 
                     src={problemIllustration} 
+                    loading="lazy"
                     alt="Pessoa perdida no caos moderno" 
                     className="w-full rounded-3xl shadow-2xl border-4 border-white/50"
                   />
@@ -231,6 +251,7 @@ function App() {
                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500 max-w-md xl:max-w-lg">
                   <img 
                     src={solutionIllustration} 
+                    loading="lazy"
                     alt="Pessoa encontrando clareza e sabedoria" 
                     className="w-full rounded-3xl shadow-2xl border-4 border-white/50"
                   />
@@ -342,6 +363,7 @@ function App() {
                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500 max-w-md xl:max-w-lg">
                   <img 
                     src={transformationIllustration} 
+                    loading="lazy"
                     alt="Transformação e crescimento pessoal" 
                     className="w-full rounded-3xl shadow-2xl border-4 border-white/50"
                   />
@@ -368,6 +390,7 @@ function App() {
                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500 max-w-sm xl:max-w-md">
                   <img 
                     src={ebookCover} 
+                    loading="lazy"
                     alt="Capa do Manual da Vida Moderna" 
                     className="w-full rounded-3xl shadow-2xl border-4 border-white/50"
                   />
@@ -532,13 +555,15 @@ function App() {
               </button>
             </div>
 
-            {/* Conteúdo PIX / Cartão */}
+            {/* Conteúdo PIX */}
             {paymentMethod === 'pix' ? (
               <div className="space-y-4 text-center">
                 <p className="text-sm font-semibold text-gray-700">Escaneie ou copie o código PIX abaixo</p>
-
+                <p className="text-xs text-gray-500">Pagamento para: <span className="font-bold">Sérgio Dias Filho</span></p>
                 <div className="bg-gradient-to-br from-white to-gray-50 p-4 rounded-2xl inline-block shadow-lg border border-amber-200">
                   <img
+                    // Otimização: Adiciona lazy loading e um placeholder de baixa qualidade
+                    loading="lazy"
                     src={qrCodeAsset}
                     alt="QR Code PIX"
                     className="w-56 h-56 md:w-64 md:h-64 object-contain mx-auto"
@@ -566,47 +591,41 @@ function App() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 border border-amber-200 bg-white text-amber-600 px-4 py-2 rounded-lg font-semibold hover:shadow-sm"
                   >
-                    Abrir Link PIX
+                    Abrir Link PIX 2º
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 </div>
 
                 <div className="text-xs text-gray-500 mt-2">Empresa: SERGIO DIAS FILHO • Instituição: NU PAGAMENTOS</div>
               </div>
-            ) : (
-              <div className="space-y-4 text-center">
-                <p className="text-base font-semibold text-gray-800">Pagamento por cartão (integração externa)</p>
-                <p className="text-sm text-gray-600">Será redirecionado para a página de pagamento segura.</p>
-                <a
-                  href={contactInfo.mercadoPagoLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-900 transition-colors"
-                >
-                  Outras formas de pagamento
-                  <ExternalLink className="w-4 h-4" />
-                </a>
+            ) : null}
+
+            {paymentMethod === 'card' && (
+              <div className="text-center space-y-4">
+                <p className="text-base font-semibold text-gray-800">Pagamento seguro com Cartão</p>
+                <p className="text-sm text-gray-600">Clique no botão abaixo para ser redirecionado ao checkout do Mercado Pago.</p>
+                {/* O botão do Mercado Pago será injetado aqui */}
+                <div id="mercado-pago-button-container" className="flex justify-center items-center min-h-[50px]">
+                  <script
+                    src="https://www.mercadopago.com.br/integrations/v1/web-payment-checkout.js"
+                    data-preference-id={contactInfo.mercadoPagoPreferenceId}
+                    data-source="button"
+                  >
+                  </script>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Você será redirecionado para um ambiente 100% seguro.
+                </p>
               </div>
             )}
 
-            <div className="mt-6 flex gap-3">
+            <div className="mt-6">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-xl transition-colors"
+                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-xl transition-colors"
               >
                 Fechar
               </button>
-              <a
-                href={`https://wa.me/${contactInfo.whatsappNumber.replace(/\D/g, '')}?text=Olá!%20Quero%20adquirir%20o%20Manual%20da%20Vida%20Moderna.`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1"
-              >
-                <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl">
-                  <MessageCircle className="w-5 h-5 inline-block mr-2" />
-                  Falar no WhatsApp
-                </button>
-              </a>
             </div>
           </div>
         </div>
