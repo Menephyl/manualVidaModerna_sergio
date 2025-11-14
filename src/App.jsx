@@ -19,7 +19,6 @@ import transformationIllustration from './assets/transformation-illustration.png
 import ebookCover from './assets/ebook-cover.png'
 import { contactInfo, benefits } from './content.js'
 import qrCodeAsset from './assets/qrcode-pix.png'
-import './App.css'
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
