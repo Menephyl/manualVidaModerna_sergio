@@ -51,7 +51,7 @@ export function BibleVerseCarousel() {
   }
 
   return (
-    <div className="relative bg-gradient-to-r from-amber-800/90 to-amber-900/90 backdrop-blur-sm rounded-lg p-4 md:p-6 shadow-lg border border-amber-700/50">
+    <div className="relative bg-gradient-to-r from-amber-800/90 to-amber-900/90 backdrop-blur-sm  p-4 md:p-6">
       <div className="relative overflow-hidden">
         <div 
           className="flex transition-transform duration-500 ease-in-out"

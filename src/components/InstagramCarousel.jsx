@@ -81,12 +81,12 @@ export function InstagramCarousel() {
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {instagramProfiles.map((profile, index) => (
-            <div key={index} className="min-w-full flex justify-center px-6 md:px-8 lg:px-10">
-              <a
-                href={profile.profileUrl}
-                target="_blank"
+            <div  className="min-w-full  bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+            <a 
+            href={profile.profileUrl}
+            target="_blank"
                 rel="noopener noreferrer"
-                className="block bg-gradient-to-br from-white via-amber-50/30 to-orange-50/30 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 p-8 md:p-10 group border-2 border-amber-100 hover:border-amber-300"
+                className=" p-4 block  justify-center  bg-gradient-to-br from-white via-amber-50/30 to-orange-50/30 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 group border-2 border-amber-100 hover:border-amber-300"
               >
                 {/* Layout de duas colunas para desktop (lg) e coluna única para mobile */}
                 <div className="flex flex-col lg:flex-row items-center lg:items-start lg:justify-center lg:gap-10 text-center lg:text-left">

@@ -73,9 +73,9 @@ function App() {
   };
 
   return (
-    <div className="min-h-[100svh] bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 pb-16">
+    <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
       {/* Header Melhorado com Carrossel de Textos Bíblicos */}
-      <header className={`bg-gradient-to-r from-amber-800 via-amber-900 to-amber-800 shadow-xl sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'py-2' : 'py-3'}`}>
+      <header className={`bg-gradient-to-r from-amber-800/90 to-amber-900/90  sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'py-2' : 'py-3'}`}>
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
           <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 mb-2">
             <div className="flex items-center gap-3">
@@ -90,12 +90,13 @@ function App() {
               Por Sérgio Dias Filho
             </Badge>
           </div>
-          <BibleVerseCarousel />
+          
         </div>
       </header>
 
       {/* Hero Section Melhorado */}
       <ScrollReveal direction="up">
+        <BibleVerseCarousel />
         <section className="py-20 md:py-28 lg:py-32 px-4 sm:px-6 lg:px-12 xl:px-20 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-amber-100/40 via-orange-50/30 to-yellow-100/40"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-300/20 rounded-full blur-3xl"></div>
@@ -181,9 +182,10 @@ function App() {
           <div className="max-w-[1200px] mx-auto text-center relative z-10">
             <p className="text-xl md:text-2xl lg:text-3xl font-semibold mb-8">Não perca esta oportunidade única de transformar sua vida!</p>
             <Button 
-              size="lg"
-              className="bg-gray text-amber-600 hover:bg-gray-50 px-10 py-5 text-lg md:text-xl font-bold shadow-2xl hover:shadow-white/50 transition-all duration-300 transform hover:scale-105 rounded-xl"
-              onClick={() => setIsModalOpen(true)}
+              size="lg"   
+              variant="primary"
+              className="bg-orange-400 cursor-pointer px-10 py-5 text-lg md:text-xl font-bold  hover:transition-all duration-300 transform hover:scale-105 rounded-xl"
+              onClick={()=> setIsModalOpen(true)}
             >
               <Gift className="w-6 h-6 mr-2" />
               Garantir Agora por R$ 47,00
@@ -486,11 +488,11 @@ function App() {
               <div className="mt-6 z-20 relative flex justify-center">
                 <Button 
                   size="lg" 
-                  className="bg-black text-white hover:bg-gray-900 px-12 md:px-16 lg:px-20 py-4 md:py-5 text-xl md:text-2xl font-bold shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 rounded-2xl"
+                  className="bg-black text-white hover:bg-gray-900 px-12 md:px-16 lg:px-20 py-4 md:py-5  md:text-2xl font-bold shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 rounded-2xl"
                   onClick={() => setIsModalOpen(true)}
                 >
                   <Gift className="w-6 h-6 mr-3" />
-                  Garantir Meu Exemplar Agora
+                  Garantir Meu Exemplar 
                   <ArrowRight className="w-6 h-6 ml-3" />
                 </Button>
               </div>
@@ -602,20 +604,18 @@ function App() {
 
             {paymentMethod === 'card' && (
               <div className="text-center space-y-4">
-                <p className="text-base font-semibold text-gray-800">Pagamento seguro com Cartão</p>
-                <p className="text-sm text-gray-600">Clique no botão abaixo para ser redirecionado ao checkout do Mercado Pago.</p>
-                {/* O botão do Mercado Pago será injetado aqui */}
-                <div id="mercado-pago-button-container" className="flex justify-center items-center min-h-[50px]">
-                  <script
-                    src="https://www.mercadopago.com.br/integrations/v1/web-payment-checkout.js"
-                    data-preference-id={contactInfo.mercadoPagoPreferenceId}
-                    data-source="button"
-                  >
-                  </script>
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Você será redirecionado para um ambiente 100% seguro.
-                </p>
+                <p className="text-base font-semibold text-gray-800">Pagamento seguro com Cartão de Crédito</p>
+                <p className="text-sm text-gray-600">Você será redirecionado para a página de pagamento segura do Mercado Pago.</p>
+                <a
+                  href={contactInfo.mercadoPagoLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors shadow-lg"
+                >
+                  <CreditCard className="w-5 h-5" />
+                  Pagar com Cartão
+                  <ExternalLink className="w-4 h-4" />
+                </a>
               </div>
             )}
 

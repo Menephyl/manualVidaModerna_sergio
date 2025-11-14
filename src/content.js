@@ -1,7 +1,7 @@
 export const contactInfo = {
   pixCode: "bd087eb9-ca8d-452c-ba4f-Od49282bbe5e",
   pixLink: "https://nubank.com.br/cobrar/e89t8/69147419-c5c8-4b3d-9313-0be15ed70bd2",
-  mercadoPagoLink: "https://mpago.la/2XrXfQB",
+  mercadoPagoLink: "https://mpago.la/2XrXfQB", // Link de pagamento para Cartão
   emailSergio: "contato@sergiodiasfilho.com",
   whatsappNumber: "+554497164827",
 };
