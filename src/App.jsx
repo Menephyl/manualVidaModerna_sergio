@@ -10,7 +10,7 @@ import { Footer as FooterComponent } from './components/Footer.jsx'
 import { 
   CheckCircle, Star, BookOpen, Users, Heart, Lightbulb, Target, Shield, Sparkles, Zap, Smartphone,
   TrendingUp, X, CreditCard, QrCode, Copy, Instagram, Facebook, Mail, ExternalLink, MessageCircle,
-  ArrowRight, Gift, Clock, Download, Award
+  ArrowRight, Gift, Clock, Download, Award, Loader2
 } from 'lucide-react'
 import heroIllustration from './assets/hero-illustration.png'
 import problemIllustration from './assets/problem-illustration.png'
@@ -18,7 +18,7 @@ import solutionIllustration from './assets/solution-illustration.png'
 import transformationIllustration from './assets/transformation-illustration.png'
 import ebookCover from './assets/ebook-cover.png'
 import { contactInfo, benefits } from './content.js'
-import qrCodeAsset from './assets/qrcode-pix.png'
+import { QRCodeCanvas } from 'qrcode.react';
 
 const Footer = memo(FooterComponent);
 const WhatsAppButton = memo(WhatsAppButtonComponent);
@@ -28,6 +28,11 @@ function App() {
   const [paymentMethod, setPaymentMethod] = useState('pix')
   const [copied, setCopied] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [buyerName, setBuyerName] = useState('');
+  const [buyerEmail, setBuyerEmail] = useState('');
+  const [pixData, setPixData] = useState(null); // Para guardar os dados do PIX dinâmico
+  const [isPixLoading, setIsPixLoading] = useState(false); // Para mostrar o loading do PIX
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,6 +52,37 @@ function App() {
     // Cleanup function
     return () => { document.body.style.overflow = 'auto'; };
   }, [isModalOpen]);
+
+  const handleGeneratePix = async () => {
+    if (!buyerName || !buyerEmail) {
+      alert('Por favor, preencha seu nome e e-mail para gerar o PIX.');
+      return;
+    }
+    setIsPixLoading(true);
+    try {
+      const response = await fetch('/api/create-pix-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: buyerName, email: buyerEmail }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setPixData(data);
+      } else {
+        alert('Erro ao gerar o PIX. Verifique se o servidor está rodando com `vercel dev`.');
+      }
+    } catch (error) {
+      console.error('Erro ao gerar PIX:', error);
+      alert('Erro de conexão ao gerar o PIX. Verifique o console e o terminal do servidor.');
+    } finally {
+      setIsPixLoading(false);
+    }
+  };
+
+  const handlePaymentMethodChange = (method) => {
+    setPaymentMethod(method);
+    setPixData(null); // Reseta o PIX ao trocar de método
+  };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
@@ -522,107 +558,122 @@ function App() {
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           onClick={(e) => e.target === e.currentTarget && setIsModalOpen(false)}
         >
-          <div className="bg-white rounded-3xl p-6 md:p-10 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border-4 border-amber-200">
+          <div className="bg-white rounded-3xl p-4 md:p-8 max-w-md w-full max-h-[95vh] overflow-y-auto shadow-2xl border-4 border-amber-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-bold text-gray-900 text-center flex-1">Adquirir Manual da Vida Moderna</h3>
-              <button
+              <h3 className="text-xl font-bold text-gray-900 text-center flex-1">Adquirir Manual</h3>
+              <Button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors ml-4"
+                className="p-1.5 rounded-full hover:bg-gray-100 transition-colors ml-2"
                 aria-label="Fechar"
               >
-                <X className="w-6 h-6 text-gray-600" />
-              </button>
+                <X className="w-5 h-5 text-gray-600" />
+              </Button>
             </div>
 
             {/* Seleção de método */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-2 gap-3 mb-4">
               <button
-                onClick={() => setPaymentMethod('pix')}
-                className={`p-4 rounded-2xl border transition-all duration-200 text-center ${
+                onClick={() => handlePaymentMethodChange('pix')}
+                className={`p-3 rounded-xl border-2 transition-all duration-200 text-center ${
                   paymentMethod === 'pix' ? 'border-amber-600 bg-amber-50 text-amber-700 shadow-lg' : 'border-gray-200 bg-white'
                 }`}
               >
-                <QrCode className="w-6 h-6 mx-auto mb-2" />
-                <div className="font-semibold">PIX</div>
+                <QrCode className="w-5 h-5 mx-auto mb-1" />
+                <div className="font-semibold text-sm">PIX</div>
               </button>
 
               <button
-                onClick={() => setPaymentMethod('card')}
-                className={`p-4 rounded-2xl border transition-all duration-200 text-center ${
+                onClick={() => handlePaymentMethodChange('card')}
+                className={`p-3 rounded-xl border-2 transition-all duration-200 text-center ${
                   paymentMethod === 'card' ? 'border-amber-600 bg-amber-50 text-amber-700 shadow-lg' : 'border-gray-200 bg-white'
                 }`}
               >
-                <CreditCard className="w-6 h-6 mx-auto mb-2" />
-                <div className="font-semibold">Cartão</div>
+                <CreditCard className="w-5 h-5 mx-auto mb-1" />
+                <div className="font-semibold text-sm">Cartão</div>
               </button>
             </div>
 
             {/* Conteúdo PIX */}
             {paymentMethod === 'pix' ? (
-              <div className="space-y-4 text-center">
-                <p className="text-sm font-semibold text-gray-700">Escaneie ou copie o código PIX abaixo</p>
-                <p className="text-xs text-gray-500">Pagamento para: <span className="font-bold">Sérgio Dias Filho</span></p>
-                <div className="bg-gradient-to-br from-white to-gray-50 p-4 rounded-2xl inline-block shadow-lg border border-amber-200">
-                  <img
-                    // Otimização: Adiciona lazy loading e um placeholder de baixa qualidade
-                    loading="lazy"
-                    src={qrCodeAsset}
-                    alt="QR Code PIX"
-                    className="w-56 h-56 md:w-64 md:h-64 object-contain mx-auto"
-                    onError={(e) => { e.target.src = '/assets/qrcode-pix.png' }}
-                  />
-                </div>
+              <>
+                {/* Formulário para PIX (necessário para gerar o pagamento) */}
+                {!pixData && !isPixLoading && (
+                  <div className="space-y-4 text-left p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-sm font-semibold text-center text-amber-800">Preencha seus dados para gerar o código PIX.</p>
+                    <div className="space-y-4">
+                      <label htmlFor="pix_name" className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                      <input type="text" id="pix_name" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="Seu nome completo" />
+                      <label htmlFor="pix_email" className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                      <input type="email" id="pix_email" value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="seu.email@exemplo.com" />
+                      <Button
+                        onClick={handleGeneratePix}
+                        className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                      >
+                        <QrCode className="w-5 h-5 mr-2" />
+                        Gerar Código PIX
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
-                <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-left break-words">
-                  <div className="text-xs text-gray-500 mb-1">Código PIX</div>
-                  <pre className="text-sm font-mono text-gray-800 whitespace-pre-wrap">{contactInfo.pixCode}</pre>
-                </div>
+                {isPixLoading && <div className="flex justify-center items-center p-10"><Loader2 className="w-10 h-10 animate-spin text-amber-500" /></div>}
 
-                <div className="flex gap-3 justify-center">
-                  <button
-                    onClick={() => copyToClipboard(contactInfo.pixCode)}
-                    className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-900 transition-colors"
-                  >
-                    <Copy className="w-4 h-4" />
-                    {copied ? 'Copiado' : 'Copiar PIX'}
-                  </button>
-
-                  <a
-                    href={contactInfo.pixLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 border border-amber-200 bg-white text-amber-600 px-4 py-2 rounded-lg font-semibold hover:shadow-sm"
-                  >
-                    Abrir Link PIX 2º
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                </div>
-
-                <div className="text-xs text-gray-500 mt-2">Empresa: SERGIO DIAS FILHO • Instituição: NU PAGAMENTOS</div>
-              </div>
+                {pixData && (
+                  <div className="space-y-3 text-center animate-in fade-in-50">
+                    <p className="text-sm font-semibold text-gray-700">Escaneie ou copie o código PIX abaixo</p>
+                    <div className="bg-white p-4 rounded-2xl inline-block shadow-lg border border-amber-200">
+                      <QRCodeCanvas
+                        value={pixData.qrCodeString}
+                        size={160}
+                        bgColor={"#ffffff"}
+                        fgColor={"#000000"}
+                        level={"L"}
+                        includeMargin={false}
+                      />
+                    </div>
+                    <div className="relative flex items-center justify-between bg-gray-100 p-3 rounded-lg border border-gray-200 text-left break-words">
+                      <pre className="text-xs font-mono text-gray-800 whitespace-pre-wrap flex-1 break-all">{pixData.qrCodeString}</pre>
+                      <button title="Copiar código PIX" onClick={() => copyToClipboard(pixData.qrCodeString)} className="p-2 rounded-md hover:bg-gray-200 transition-colors ml-2">
+                        {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-600" />}
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 pt-2">Aguardando pagamento... A página será atualizada automaticamente.</p>
+                  </div>
+                )}
+              </>
             ) : null}
 
             {paymentMethod === 'card' && (
-              <div className="text-center space-y-4">
-                <p className="text-base font-semibold text-gray-800">Pagamento seguro com Cartão de Crédito</p>
+              <div className="text-center space-y-3">
+                {/* Formulário para coletar dados do comprador */}
+                <div className="space-y-4 text-left">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                    <input type="text" id="name" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="Seu nome completo" />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                    <input type="email" id="email" value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="seu.email@exemplo.com" />
+                    <p className="text-xs text-gray-500 mt-1">Usaremos este e-mail para enviar a confirmação.</p>
+                  </div>
+                </div>
+
+                <p className="text-sm font-semibold text-gray-800 pt-2">Pagamento seguro com Cartão de Crédito</p>
                 <p className="text-sm text-gray-600">Você será redirecionado para a página de pagamento segura do Mercado Pago.</p>
-                <a
-                  href={contactInfo.mercadoPagoLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors shadow-lg"
+                <button
+                  onClick={() => window.location.href = contactInfo.mercadoPagoLink}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-blue-600 transition-colors shadow-lg"
                 >
                   <CreditCard className="w-5 h-5" />
-                  Pagar com Cartão
-                  <ExternalLink className="w-4 h-4" />
-                </a>
+                  Ir para o Pagamento
+                </button>
               </div>
             )}
 
-            <div className="mt-6">
+            <div className="mt-4">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-xl transition-colors"
+                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-lg transition-colors"
               >
                 Fechar
               </button>

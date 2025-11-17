@@ -5,14 +5,20 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // Essencial para o deploy no GitHub Pages
-  base: '/manualVidaModerna_sergio/', 
   plugins: [
     tailwindcss(),
     react()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001', // The address of our new API server
+        changeOrigin: true,
+      },
     },
   },
 })
