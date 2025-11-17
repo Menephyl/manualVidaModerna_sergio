@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Instagram, ExternalLink, Star } from 'lucide-react'
-import gabrielImage from '../assets/gabriel.jpg'
+import gabrielImage from '@/assets/gabriel.jpg'
 import { Button } from './ui/button' // Importando o componente Button
-import pedroImage from '../assets/pedro.jpg' // Adicione a imagem pedro.jpg em src/assets
-import mustafaImage from '../assets/mustafa.jpg' // Adicione a imagem mustafa.jpg em src/assets
-import anaLauraImage from '../assets/analaura.jpg'
+import pedroImage from '@/assets/pedro.jpg'
+import mustafaImage from '@/assets/mustafa.jpg'
+import anaLauraImage from '@/assets/analaura.jpg'
 
 const instagramProfiles = [
   {
