@@ -4,7 +4,6 @@ import gabrielImage from '@/assets/gabriel.jpg'
 import { Button } from './ui/button' // Importando o componente Button
 import pedroImage from '@/assets/pedro.jpg'
 import mustafaImage from '@/assets/mustafa.jpg'
-import anaLauraImage from '@/assets/analaura.jpg'
 
 const instagramProfiles = [
   {
@@ -34,7 +33,7 @@ const instagramProfiles = [
     username: "@analaurabatistaa_",
     name: "Ana Laura Batista",
     profileUrl: "https://www.instagram.com/analaurabatistaa_/",
-    image: anaLauraImage,
+    image: "/analaura.jpg", // Use direct public path
     fallbackImage: "https://ui-avatars.com/api/?name=Ana+Laura&background=FFB84D&color=fff&size=256&bold=true&font-size=0.5",
     testimonial: "Recomendo este manual para todos que buscam uma vida com significado. Transformador e prático!"
   }
