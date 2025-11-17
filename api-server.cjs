@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 });
 
 const apiDir = path.join(__dirname, 'api');
-const apiFiles = readdirSync(apiDir).filter(file => file.endsWith('.js'));
+const apiFiles = fs.readdirSync(apiDir).filter(file => file.endsWith('.js'));
 
 for (const file of apiFiles) {
   const routeName = file.replace('.js', '');
