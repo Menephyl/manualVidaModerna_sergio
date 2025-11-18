@@ -549,19 +549,6 @@ function App() {
               </Button>
             </div>
 
-            {/* Formulário Unificado de Dados do Comprador */}
-            <div className="space-y-3 text-left p-3 mb-4 bg-gray-50 border border-gray-200 rounded-lg">
-              <p className="text-sm font-semibold text-center text-gray-700">1. Preencha seus dados</p>
-              <div>
-                <label htmlFor="buyer_name" className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
-                <input type="text" id="buyer_name" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="Seu nome completo" />
-              </div>
-              <div>
-                <label htmlFor="buyer_email" className="block text-sm font-medium text-gray-700 mb-1">E-mail de Contato</label>
-                <input type="email" id="buyer_email" value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="seu.email@exemplo.com" />
-              </div>
-            </div>
-
             {/* Seleção de método */}
             <div className="grid grid-cols-2 gap-2 mb-4">
               <button
@@ -589,7 +576,7 @@ function App() {
             {paymentMethod === 'pix' ? (
               <>
                 <div className="space-y-3 text-center">
-                  <p className="text-sm font-semibold text-gray-700">2. Escaneie ou copie o código PIX abaixo</p>
+                  <p className="text-sm font-semibold text-gray-700">Escaneie ou copie o código PIX abaixo</p>
                   <div className="bg-white p-2 rounded-xl inline-block shadow-lg border border-amber-200">
                     <QRCodeCanvas
                       value={contactInfo.pixCode}
