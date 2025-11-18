@@ -31,9 +31,11 @@ function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [buyerName, setBuyerName] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
+  const [buyerCpf, setBuyerCpf] = useState(''); // 1. Adicionar estado para o CPF
   const [pixData, setPixData] = useState(null); // Para guardar os dados do PIX dinâmico
   const [isPixLoading, setIsPixLoading] = useState(false); // Para mostrar o loading do PIX
   // const [pixStatus, setPixStatus] = useState('pending'); // 'pending', 'approved' - Desativado para fluxo manual
+  const [pixError, setPixError] = useState(null); // Para guardar mensagens de erro
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,11 +58,42 @@ function App() {
 
   // Efeito para monitorar (polling) o status do pagamento PIX
   // Lógica de automação PIX desativada para fluxo manual temporário
+  // 2. Função para chamar a API de backend
+  const handleGeneratePix = async (e) => {
+    e.preventDefault();
+    if (!buyerName || !buyerEmail || !buyerCpf) {
+      setPixError('Por favor, preencha todos os campos.');
+      return;
+    }
+    setIsPixLoading(true);
+    setPixError(null);
+    setPixData(null);
+
+    try {
+      const response = await fetch('/api/create-pix-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: buyerName, email: buyerEmail, cpf: buyerCpf }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        // Captura o erro vindo da API
+        throw new Error(data.error || 'Falha ao gerar o PIX. Tente novamente.');
+      }
+      setPixData(data); // Salva os dados do PIX (QR Code, etc.) no estado
+    } catch (error) {
+      setPixError(error.message);
+    } finally {
+      setIsPixLoading(false);
+    }
+  };
 
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
     // setPixData(null); 
     // setPixStatus('pending'); 
+    setPixData(null); // Limpa dados do PIX ao trocar de método
+    setPixError(null); // Limpa erros
   };
 
   const copyToClipboard = (text) => {
