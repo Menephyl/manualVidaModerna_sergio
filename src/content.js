@@ -1,6 +1,6 @@
 export const contactInfo = {
-  // pixCode: "bd087eb9-ca8d-452c-ba4f-0d49282bbe5e", // Chave PIX original
-  pixCode: "00020101021126330014br.gov.bcb.pix0111123565666785204000053039865802BR5918YAN ISONEL PEREIRA6009SAO PAULO622905251KA9P094M81YGE6PWMJEATJEA63044E22", // Chave PIX de teste
+  pixCode: "bd087eb9-ca8d-452c-ba4f-0d49282bbe5e", // Chave PIX original (ativa)
+  // pixCode: "00020101021126330014br.gov.bcb.pix0111123565666785204000053039865802BR5918YAN ISONEL PEREIRA6009SAO PAULO622905251KA9P094M81YGE6PWMJEATJEA63044E22", // Chave PIX de teste (inativa)
   pixLink: "https://nubank.com.br/cobrar/e89t8/69147419-c5c8-4b3d-9313-0be15ed70bd2",
   mercadoPagoLink: "https://mpago.la/2XrXfQB", // Link de pagamento para Cartão
   emailSergio: "contato@sergiodiasfilho.com",

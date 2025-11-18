@@ -537,13 +537,14 @@ function App() {
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           onClick={(e) => e.target === e.currentTarget && setIsModalOpen(false)}
         >
-          <div className="bg-white rounded-2xl p-4 md:p-6 max-w-md w-full max-h-[95vh] overflow-y-auto shadow-2xl border-2 border-amber-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900 text-center flex-1">Adquirir Manual</h3>
+          <div className="bg-white rounded-2xl p-4 max-w-sm w-full max-h-[95vh] overflow-y-auto shadow-2xl border-2 border-amber-200">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-bold text-gray-900 text-center flex-1">Adquirir Manual</h3>
               <Button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-full hover:bg-gray-100 transition-colors ml-2"
-                aria-label="Fechar"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full ml-2"
               >
                 <X className="w-5 h-5 text-gray-600" />
               </Button>
@@ -552,7 +553,7 @@ function App() {
             {/* Seleção de método */}
             <div className="grid grid-cols-2 gap-2 mb-4">
               <button
-                onClick={() => handlePaymentMethodChange('pix')}
+                onClick={() => handlePaymentMethodChange('pix')} 
                 className={`p-3 rounded-xl border-2 transition-all duration-200 text-center ${
                   paymentMethod === 'pix' ? 'border-amber-600 bg-amber-50 text-amber-700 shadow-lg' : 'border-gray-200 bg-white'
                 }`}
@@ -575,25 +576,25 @@ function App() {
             {/* Conteúdo PIX */}
             {paymentMethod === 'pix' ? (
               <>
-                <div className="space-y-3 text-center">
-                  <p className="text-sm font-semibold text-gray-700">Escaneie ou copie o código PIX abaixo</p>
-                  <div className="bg-white p-2 rounded-xl inline-block shadow-lg border border-amber-200">
+                <div className="space-y-2 text-center">
+                  <p className="text-sm font-medium text-gray-700">Escaneie ou copie o código PIX</p>
+                  <div className="bg-white p-1.5 rounded-lg inline-block shadow-md border border-amber-200">
                     <QRCodeCanvas
                       value={contactInfo.pixCode}
-                      size={140}
+                      size={128}
                       bgColor={"#ffffff"}
                       fgColor={"#000000"}
                       level={"L"}
                       includeMargin={false}
                     />
                   </div>
-                  <div className="relative flex items-center justify-between bg-gray-100 p-3 rounded-lg border border-gray-200 text-left break-words">
+                  <div className="relative flex items-center justify-between bg-gray-100 p-2.5 rounded-lg border border-gray-200 text-left break-words">
                     <pre className="text-xs font-mono text-gray-800 whitespace-pre-wrap flex-1 break-all">{contactInfo.pixCode}</pre> 
                     <button title="Copiar código PIX" onClick={() => copyToClipboard(contactInfo.pixCode)} className="p-2 rounded-md hover:bg-gray-200 transition-colors ml-2">
                       {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-600" />}
                     </button>
                   </div>
-                  <div className="pt-4">
+                  <div className="pt-2">
                     <Button
                       onClick={() => window.location.href = 'https://api.whatsapp.com/send?phone=554497164827&text=ol%C3%A1+quero+falar+sobre+o+livro,+comprei+segue+comprovante+abaixo'}
                       className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
@@ -607,8 +608,8 @@ function App() {
             ) : null}
 
             {paymentMethod === 'card' && (
-              <div className="text-center space-y-4">
-                <p className="text-sm font-semibold text-gray-800 pt-2">Pagamento seguro com Cartão de Crédito</p>
+              <div className="text-center space-y-3 pt-2">
+                <p className="text-sm font-semibold text-gray-800">Pagamento seguro com Cartão</p>
                 <p className="text-sm text-gray-600">Você será redirecionado para a página de pagamento segura do Mercado Pago.</p>
                 <button
                   onClick={() => window.location.href = contactInfo.mercadoPagoLink}
@@ -620,10 +621,10 @@ function App() {
               </div>
             )}
 
-            <div className="mt-4">
+            <div className="mt-3 border-t pt-3">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-lg transition-colors"
+                className="w-full text-gray-600 font-medium py-2 rounded-lg hover:bg-gray-100 transition-colors text-sm"
               >
                 Fechar
               </button>

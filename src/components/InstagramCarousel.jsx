@@ -7,7 +7,7 @@ const instagramProfiles = [
     username: "@gabs7fss",
     name: "Gabriel",
     profileUrl: "https://www.instagram.com/gabs7fss",
-    image: "/gabriel.jpg",
+    image: "/src/assets/gabriel.jpg",
     fallbackImage: "https://ui-avatars.com/api/?name=Gabriel&background=FFB84D&color=fff&size=256&bold=true&font-size=0.5",
     testimonial: "Um livro transformador que conecta sabedoria milenar com a vida moderna. Recomendo a todos que buscam propósito!"
   },
@@ -15,7 +15,7 @@ const instagramProfiles = [
     username: "@pedro_bianquini",
     name: "Pedro Bianquini",
     profileUrl: "https://www.instagram.com/pedro_bianquini",
-    image: "/pedro.jpg",
+    image: "/src/assets/pedro.jpg",
     fallbackImage: "https://ui-avatars.com/api/?name=Pedro+Bianquini&background=FFB84D&color=fff&size=256&bold=true&font-size=0.4",
     testimonial: "Leitura essencial para quem busca propósito e clareza na vida. Os princípios bíblicos aplicados são incríveis!"
   },
@@ -23,14 +23,14 @@ const instagramProfiles = [
     username: "@mustafat.humed",
     name: "Mustafa Humed",
     profileUrl: "https://www.instagram.com/mustafat.humed",
-    image: "/mustafa.jpg",
+    image: "/src/assets/mustafa.jpg",
     testimonial: "Princípios atemporais aplicados aos desafios do século XXI. Este manual mudou minha perspectiva sobre sucesso!"
   },
   {
     username: "@analaurabatistaa_",
     name: "Ana Laura Batista",
     profileUrl: "https://www.instagram.com/analaurabatistaa_/",
-    image: "/analaura.jpg", // Use direct public path
+    image: "/src/assets/analaura.jpg", // Use direct public path
     fallbackImage: "https://ui-avatars.com/api/?name=Ana+Laura&background=FFB84D&color=fff&size=256&bold=true&font-size=0.5",
     testimonial: "Recomendo este manual para todos que buscam uma vida com significado. Transformador e prático!"
   }
