@@ -29,7 +29,7 @@ export default async function handler(req, res) {
             number: '19119119100', // Usamos um CPF de teste genérico
           },
         },
-        notification_url: `${process.env.APP_URL}/api/payment-webhook`, // A API do Mercado Pago exige um CPF para pagamentos PIX.
+        // notification_url: `${process.env.APP_URL}/api/payment-webhook`, // This will be enabled in production with a public URL
       },
     });
 
