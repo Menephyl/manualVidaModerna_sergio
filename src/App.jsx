@@ -33,7 +33,7 @@ function App() {
   const [buyerEmail, setBuyerEmail] = useState('');
   const [pixData, setPixData] = useState(null); // Para guardar os dados do PIX dinâmico
   const [isPixLoading, setIsPixLoading] = useState(false); // Para mostrar o loading do PIX
-  const [pixStatus, setPixStatus] = useState('pending'); // 'pending', 'approved'
+  // const [pixStatus, setPixStatus] = useState('pending'); // 'pending', 'approved' - Desativado para fluxo manual
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,60 +55,12 @@ function App() {
   }, [isModalOpen]);
 
   // Efeito para monitorar (polling) o status do pagamento PIX
-  useEffect(() => {
-    if (!pixData || pixStatus === 'approved') {
-      return;
-    }
-
-    const intervalId = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/check-pix-status?paymentId=${pixData.paymentId}`);
-        const data = await response.json();
-
-        if (data.status === 'approved') {
-          setPixStatus('approved');
-          setPixData(prev => ({ ...prev, downloadUrl: data.downloadUrl })); // Salva a URL de download
-          clearInterval(intervalId); // Para o polling
-        }
-      } catch (error) {
-        console.error('Polling error:', error);
-      }
-    }, 5000); // Verifica a cada 5 segundos
-
-    return () => clearInterval(intervalId); // Limpa o intervalo ao desmontar ou quando o status muda
-  }, [pixData, pixStatus]);
-
-  const handleGeneratePix = async () => {
-    if (!buyerName || !buyerEmail) {
-      alert('Por favor, preencha seu nome e e-mail para gerar o PIX.');
-      return;
-    }
-    setIsPixLoading(true);
-    try {
-      const response = await fetch('/api/create-pix-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: buyerName, email: buyerEmail }),
-      });
-      const data = await response.json(); // Read the body only once
-      if (response.ok) {
-        setPixData(data);
-      } else {
-        const errorMessage = data.details?.description || 'Erro desconhecido ao gerar o PIX.';
-        alert(`Erro do Servidor: ${errorMessage}\n\nVerifique o token no arquivo .env e se o servidor local está rodando.`);
-      }
-    } catch (error) {
-      console.error('Erro ao gerar PIX:', error);
-      alert('Erro de conexão ao gerar o PIX. Verifique o console e o terminal do servidor.');
-    } finally {
-      setIsPixLoading(false);
-    }
-  };
+  // Lógica de automação PIX desativada para fluxo manual temporário
 
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
-    setPixData(null); // Reseta o PIX ao trocar de método
-    setPixStatus('pending'); // Reseta o status do PIX
+    // setPixData(null); 
+    // setPixStatus('pending'); 
   };
 
   const copyToClipboard = (text) => {
@@ -636,60 +588,34 @@ function App() {
             {/* Conteúdo PIX */}
             {paymentMethod === 'pix' ? (
               <>
-                {/* Formulário para PIX (necessário para gerar o pagamento) */}
-                {!pixData && !isPixLoading && (                  <div className="text-center p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                    <p className="text-sm font-semibold text-center text-amber-800 mb-3">2. Gere o código para pagamento</p>
+                <div className="space-y-3 text-center">
+                  <p className="text-sm font-semibold text-gray-700">2. Escaneie ou copie o código PIX abaixo</p>
+                  <div className="bg-white p-2 rounded-xl inline-block shadow-lg border border-amber-200">
+                    <QRCodeCanvas
+                      value={contactInfo.pixCode}
+                      size={140}
+                      bgColor={"#ffffff"}
+                      fgColor={"#000000"}
+                      level={"L"}
+                      includeMargin={false}
+                    />
+                  </div>
+                  <div className="relative flex items-center justify-between bg-gray-100 p-3 rounded-lg border border-gray-200 text-left break-words">
+                    <pre className="text-xs font-mono text-gray-800 whitespace-pre-wrap flex-1 break-all">{contactInfo.pixCode}</pre> 
+                    <button title="Copiar código PIX" onClick={() => copyToClipboard(contactInfo.pixCode)} className="p-2 rounded-md hover:bg-gray-200 transition-colors ml-2">
+                      {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-600" />}
+                    </button>
+                  </div>
+                  <div className="pt-4">
                     <Button
-                      onClick={handleGeneratePix}
-                      className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                      onClick={() => window.location.href = 'https://api.whatsapp.com/send?phone=554497164827&text=ol%C3%A1+quero+falar+sobre+o+livro,+comprei+segue+comprovante+abaixo'}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
                     >
-                      <QrCode className="w-5 h-5 mr-2" />
-                      Gerar Código PIX
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Já Paguei, Enviar Comprovante
                     </Button>
                   </div>
-                )}
-
-                {isPixLoading && <div className="flex justify-center items-center p-10"><Loader2 className="w-10 h-10 animate-spin text-amber-500" /></div>}
-
-                {pixData && pixStatus === 'pending' && (
-                  <div className="space-y-2 text-center animate-in fade-in-50">
-                    <p className="text-sm font-semibold text-gray-700">Escaneie ou copie o código PIX abaixo</p>
-                    <div className="bg-white p-2 rounded-xl inline-block shadow-lg border border-amber-200">
-                      <QRCodeCanvas
-                        value={pixData.qrCodeString} // O código "Copia e Cola"
-                        size={140}
-                        bgColor={"#ffffff"}
-                        fgColor={"#000000"}
-                        level={"L"}
-                        includeMargin={false}
-                      />
-                    </div>
-                    <div className="relative flex items-center justify-between bg-gray-100 p-3 rounded-lg border border-gray-200 text-left break-words">
-                      <pre className="text-xs font-mono text-gray-800 whitespace-pre-wrap flex-1 break-all">{pixData.qrCodeString}</pre> 
-                      <button title="Copiar código PIX" onClick={() => copyToClipboard(pixData.qrCodeString)} className="p-2 rounded-md hover:bg-gray-200 transition-colors ml-2">
-                        {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-600" />}
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 text-xs text-gray-500 pt-2">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Aguardando pagamento...</span>
-                    </div>
-                  </div>
-                )}
-
-                {pixStatus === 'approved' && (
-                  <div className="text-center space-y-3 p-4 bg-green-50 border-2 border-green-200 rounded-lg animate-in fade-in-50">
-                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
-                    <h4 className="text-xl font-bold text-green-800">Pagamento Confirmado!</h4>
-                    <p className="text-gray-700">Parabéns! Seu manual já está disponível para download.</p>
-                    <Button asChild size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold">
-                      <a href={pixData.downloadUrl} download>
-                        <Download className="mr-2 h-5 w-5" />
-                        BAIXAR MANUAL AGORA
-                      </a>
-                    </Button>
-                  </div>
-                )}
+                </div>
               </>
             ) : null}
 
