@@ -42,7 +42,7 @@ export default async function handler(req, res) {
           pending: `${process.env.APP_URL}/`, // Retorna para a home em caso de pagamento pendente
         },
         auto_return: 'approved', // Retorna automaticamente para o site após pagamento aprovado
-        // notification_url: `${process.env.APP_URL}/api/payment-webhook`, // This will be enabled in production with a public URL
+        notification_url: `${process.env.APP_URL}/api/payment-webhook`, // This will be enabled in production with a public URL
       },
     });
 

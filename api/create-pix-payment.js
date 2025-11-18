@@ -31,7 +31,7 @@ export default async function handler(req, res) {
             number: '12356566678', // CPF de teste padrão
           },
         },
-        // notification_url: `${process.env.APP_URL}/api/payment-webhook`, // This will be enabled in production with a public URL
+        notification_url: `${process.env.APP_URL}/api/payment-webhook`, // This will be enabled in production with a public URL
       },
       requestOptions: {
         headers: {
