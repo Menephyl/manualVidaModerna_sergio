@@ -39,4 +39,7 @@ const port = 3001;
 http.createServer(app).listen(port, () => {
   console.log(`✅ API server is running and listening on http://localhost:${port}`);
   console.log('Registered API routes:', apiFiles.map(f => `/api/${f.replace('.js', '')}`).join(', '));
+  // Log para confirmar que a variável de ambiente foi carregada
+  const token = process.env.MP_ACCESS_TOKEN;
+  console.log(`🔑 Mercado Pago Token Loaded: ${token ? `...${token.slice(-6)}` : 'NOT FOUND'}`);
 });

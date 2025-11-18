@@ -1,10 +1,7 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
-import { Resend } from 'resend';
 
 // Inicializa o cliente do Mercado Pago com o Access Token do ambiente
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-const payment = new Payment(client);
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

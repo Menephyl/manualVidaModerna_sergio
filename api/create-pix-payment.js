@@ -24,13 +24,12 @@ export default async function handler(req, res) {
         payer: {
           email: email,
           first_name: name,
-          // A API do Mercado Pago exige um CPF para pagamentos PIX.
           identification: {
             type: 'CPF',
             number: '19119119100', // Usamos um CPF de teste genérico
           },
         },
-        notification_url: `${process.env.APP_URL}/api/payment-webhook`,
+        notification_url: `${process.env.APP_URL}/api/payment-webhook`, // A API do Mercado Pago exige um CPF para pagamentos PIX.
       },
     });
 

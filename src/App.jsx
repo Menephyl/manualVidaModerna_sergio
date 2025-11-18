@@ -33,6 +33,7 @@ function App() {
   const [buyerEmail, setBuyerEmail] = useState('');
   const [pixData, setPixData] = useState(null); // Para guardar os dados do PIX dinâmico
   const [isPixLoading, setIsPixLoading] = useState(false); // Para mostrar o loading do PIX
+  const [pixStatus, setPixStatus] = useState('pending'); // 'pending', 'approved'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,6 +53,30 @@ function App() {
     // Cleanup function
     return () => { document.body.style.overflow = 'auto'; };
   }, [isModalOpen]);
+
+  // Efeito para monitorar (polling) o status do pagamento PIX
+  useEffect(() => {
+    if (!pixData || pixStatus === 'approved') {
+      return;
+    }
+
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/check-pix-status?paymentId=${pixData.paymentId}`);
+        const data = await response.json();
+
+        if (data.status === 'approved') {
+          setPixStatus('approved');
+          setPixData(prev => ({ ...prev, downloadUrl: data.downloadUrl })); // Salva a URL de download
+          clearInterval(intervalId); // Para o polling
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+    }, 5000); // Verifica a cada 5 segundos
+
+    return () => clearInterval(intervalId); // Limpa o intervalo ao desmontar ou quando o status muda
+  }, [pixData, pixStatus]);
 
   const handleGeneratePix = async () => {
     if (!buyerName || !buyerEmail) {
@@ -82,6 +107,7 @@ function App() {
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
     setPixData(null); // Reseta o PIX ao trocar de método
+    setPixStatus('pending'); // Reseta o status do PIX
   };
 
   const copyToClipboard = (text) => {
@@ -558,7 +584,7 @@ function App() {
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           onClick={(e) => e.target === e.currentTarget && setIsModalOpen(false)}
         >
-          <div className="bg-white rounded-3xl p-4 md:p-8 max-w-md w-full max-h-[95vh] overflow-y-auto shadow-2xl border-4 border-amber-200">
+          <div className="bg-white rounded-2xl p-4 md:p-6 max-w-md w-full max-h-[95vh] overflow-y-auto shadow-2xl border-2 border-amber-200">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-900 text-center flex-1">Adquirir Manual</h3>
               <Button
@@ -570,8 +596,21 @@ function App() {
               </Button>
             </div>
 
+            {/* Formulário Unificado de Dados do Comprador */}
+            <div className="space-y-3 text-left p-3 mb-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <p className="text-sm font-semibold text-center text-gray-700">1. Preencha seus dados</p>
+              <div>
+                <label htmlFor="buyer_name" className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                <input type="text" id="buyer_name" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="Seu nome completo" />
+              </div>
+              <div>
+                <label htmlFor="buyer_email" className="block text-sm font-medium text-gray-700 mb-1">E-mail de Contato</label>
+                <input type="email" id="buyer_email" value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="seu.email@exemplo.com" />
+              </div>
+            </div>
+
             {/* Seleção de método */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-2 gap-2 mb-4">
               <button
                 onClick={() => handlePaymentMethodChange('pix')}
                 className={`p-3 rounded-xl border-2 transition-all duration-200 text-center ${
@@ -597,34 +636,27 @@ function App() {
             {paymentMethod === 'pix' ? (
               <>
                 {/* Formulário para PIX (necessário para gerar o pagamento) */}
-                {!pixData && !isPixLoading && (
-                  <div className="space-y-4 text-left p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                    <p className="text-sm font-semibold text-center text-amber-800">Preencha seus dados para gerar o código PIX.</p>
-                    <div className="space-y-4">
-                      <label htmlFor="pix_name" className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
-                      <input type="text" id="pix_name" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="Seu nome completo" />
-                      <label htmlFor="pix_email" className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-                      <input type="email" id="pix_email" value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="seu.email@exemplo.com" />
-                      <Button
-                        onClick={handleGeneratePix}
-                        className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-                      >
-                        <QrCode className="w-5 h-5 mr-2" />
-                        Gerar Código PIX
-                      </Button>
-                    </div>
+                {!pixData && !isPixLoading && (                  <div className="text-center p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-sm font-semibold text-center text-amber-800 mb-3">2. Gere o código para pagamento</p>
+                    <Button
+                      onClick={handleGeneratePix}
+                      className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                    >
+                      <QrCode className="w-5 h-5 mr-2" />
+                      Gerar Código PIX
+                    </Button>
                   </div>
                 )}
 
                 {isPixLoading && <div className="flex justify-center items-center p-10"><Loader2 className="w-10 h-10 animate-spin text-amber-500" /></div>}
 
-                {pixData && (
-                  <div className="space-y-3 text-center animate-in fade-in-50">
+                {pixData && pixStatus === 'pending' && (
+                  <div className="space-y-2 text-center animate-in fade-in-50">
                     <p className="text-sm font-semibold text-gray-700">Escaneie ou copie o código PIX abaixo</p>
-                    <div className="bg-white p-4 rounded-2xl inline-block shadow-lg border border-amber-200">
+                    <div className="bg-white p-2 rounded-xl inline-block shadow-lg border border-amber-200">
                       <QRCodeCanvas
-                        value={pixData.qrCodeString}
-                        size={160}
+                        value={pixData.qrCodeString} // O código "Copia e Cola"
+                        size={140}
                         bgColor={"#ffffff"}
                         fgColor={"#000000"}
                         level={"L"}
@@ -632,32 +664,36 @@ function App() {
                       />
                     </div>
                     <div className="relative flex items-center justify-between bg-gray-100 p-3 rounded-lg border border-gray-200 text-left break-words">
-                      <pre className="text-xs font-mono text-gray-800 whitespace-pre-wrap flex-1 break-all">{pixData.qrCodeString}</pre>
+                      <pre className="text-xs font-mono text-gray-800 whitespace-pre-wrap flex-1 break-all">{pixData.qrCodeString}</pre> 
                       <button title="Copiar código PIX" onClick={() => copyToClipboard(pixData.qrCodeString)} className="p-2 rounded-md hover:bg-gray-200 transition-colors ml-2">
                         {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-600" />}
                       </button>
                     </div>
-                    <p className="text-xs text-gray-500 pt-2">Aguardando pagamento... A página será atualizada automaticamente.</p>
+                    <div className="flex items-center justify-center gap-2 text-xs text-gray-500 pt-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Aguardando pagamento...</span>
+                    </div>
+                  </div>
+                )}
+
+                {pixStatus === 'approved' && (
+                  <div className="text-center space-y-3 p-4 bg-green-50 border-2 border-green-200 rounded-lg animate-in fade-in-50">
+                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
+                    <h4 className="text-xl font-bold text-green-800">Pagamento Confirmado!</h4>
+                    <p className="text-gray-700">Parabéns! Seu manual já está disponível para download.</p>
+                    <Button asChild size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold">
+                      <a href={pixData.downloadUrl} download>
+                        <Download className="mr-2 h-5 w-5" />
+                        BAIXAR MANUAL AGORA
+                      </a>
+                    </Button>
                   </div>
                 )}
               </>
             ) : null}
 
             {paymentMethod === 'card' && (
-              <div className="text-center space-y-3">
-                {/* Formulário para coletar dados do comprador */}
-                <div className="space-y-4 text-left">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
-                    <input type="text" id="name" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="Seu nome completo" />
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-                    <input type="email" id="email" value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="seu.email@exemplo.com" />
-                    <p className="text-xs text-gray-500 mt-1">Usaremos este e-mail para enviar a confirmação.</p>
-                  </div>
-                </div>
-
+              <div className="text-center space-y-4">
                 <p className="text-sm font-semibold text-gray-800 pt-2">Pagamento seguro com Cartão de Crédito</p>
                 <p className="text-sm text-gray-600">Você será redirecionado para a página de pagamento segura do Mercado Pago.</p>
                 <button

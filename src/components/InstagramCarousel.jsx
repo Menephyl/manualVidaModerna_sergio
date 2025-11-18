@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Instagram, ExternalLink, Star } from 'lucide-react'
-import gabrielImage from '@/assets/gabriel.jpg'
 import { Button } from './ui/button' // Importando o componente Button
-import pedroImage from '@/assets/pedro.jpg'
-import mustafaImage from '@/assets/mustafa.jpg'
 
 const instagramProfiles = [
   {
     username: "@gabs7fss",
     name: "Gabriel",
     profileUrl: "https://www.instagram.com/gabs7fss",
-    image: gabrielImage,
+    image: "/gabriel.jpg",
     fallbackImage: "https://ui-avatars.com/api/?name=Gabriel&background=FFB84D&color=fff&size=256&bold=true&font-size=0.5",
     testimonial: "Um livro transformador que conecta sabedoria milenar com a vida moderna. Recomendo a todos que buscam propósito!"
   },
@@ -18,7 +15,7 @@ const instagramProfiles = [
     username: "@pedro_bianquini",
     name: "Pedro Bianquini",
     profileUrl: "https://www.instagram.com/pedro_bianquini",
-    image: pedroImage,
+    image: "/pedro.jpg",
     fallbackImage: "https://ui-avatars.com/api/?name=Pedro+Bianquini&background=FFB84D&color=fff&size=256&bold=true&font-size=0.4",
     testimonial: "Leitura essencial para quem busca propósito e clareza na vida. Os princípios bíblicos aplicados são incríveis!"
   },
@@ -26,7 +23,7 @@ const instagramProfiles = [
     username: "@mustafat.humed",
     name: "Mustafa Humed",
     profileUrl: "https://www.instagram.com/mustafat.humed",
-    image: mustafaImage,
+    image: "/mustafa.jpg",
     testimonial: "Princípios atemporais aplicados aos desafios do século XXI. Este manual mudou minha perspectiva sobre sucesso!"
   },
   {
