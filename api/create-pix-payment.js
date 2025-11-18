@@ -1,6 +1,8 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 
 // Inicializa o cliente do Mercado Pago com o Access Token do ambiente
+// IMPORTANTE: Para testes locais, use o Access Token de TESTE (começa com TEST-...).
+// Para produção, use o Access Token de PRODUÇÃO (começa com APP_USR-...).
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
 const payment = new Payment(client);
 
@@ -26,7 +28,7 @@ export default async function handler(req, res) {
           first_name: name,
           identification: {
             type: 'CPF',
-            number: '19119119100', // Usamos um CPF de teste genérico
+            number: '12356566678', // CPF de teste fornecido pelo usuário
           },
         },
         // notification_url: `${process.env.APP_URL}/api/payment-webhook`, // This will be enabled in production with a public URL

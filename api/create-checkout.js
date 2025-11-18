@@ -1,7 +1,8 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 
 // Inicializa o cliente do Mercado Pago com o Access Token do ambiente
-// Adicione o seu Access Token do Mercado Pago às variáveis de ambiente do seu projeto/hosting
+// IMPORTANTE: Para testes locais, use o Access Token de TESTE (começa com TEST-...).
+// Para produção, use o Access Token de PRODUÇÃO (começa com APP_USR-...).
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
 
 export default async function handler(req, res) {
