@@ -94,7 +94,9 @@ function App() {
       if (response.ok) {
         setPixData(data);
       } else {
-        alert('Erro ao gerar o PIX. Verifique se o servidor está rodando com `vercel dev`.');
+        const errorData = await response.json();
+        const errorMessage = errorData.details?.description || 'Erro desconhecido ao gerar o PIX.';
+        alert(`Erro do Servidor: ${errorMessage}\n\nVerifique o token no arquivo .env e se o servidor local está rodando.`);
       }
     } catch (error) {
       console.error('Erro ao gerar PIX:', error);

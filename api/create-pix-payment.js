@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     }
     res.status(500).json({ 
       error: 'Failed to create PIX payment.',
-      details: error.cause ? error.cause : { message: error.message }
+      details: error.cause ? error.cause[0] : { description: error.message }
     });
   }
 }
