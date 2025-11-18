@@ -90,12 +90,11 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: buyerName, email: buyerEmail }),
       });
-      const data = await response.json();
+      const data = await response.json(); // Read the body only once
       if (response.ok) {
         setPixData(data);
       } else {
-        const errorData = await response.json();
-        const errorMessage = errorData.details?.description || 'Erro desconhecido ao gerar o PIX.';
+        const errorMessage = data.details?.description || 'Erro desconhecido ao gerar o PIX.';
         alert(`Erro do Servidor: ${errorMessage}\n\nVerifique o token no arquivo .env e se o servidor local está rodando.`);
       }
     } catch (error) {
