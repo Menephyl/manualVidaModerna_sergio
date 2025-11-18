@@ -12,9 +12,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { email, name } = req.body;
-    if (!email || !name) {
-      return res.status(400).json({ error: 'Email and name are required.' });
+    const { email, name, cpf } = req.body;
+    if (!email || !name || !cpf) {
+      return res.status(400).json({ error: 'Email, nome e CPF são obrigatórios.' });
     }
 
     const result = await payment.create({
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
           first_name: name,
           identification: {
             type: 'CPF',
-            number: '12356566678', // CPF de teste padrão
+            number: cpf.replace(/\D/g, ''), // Usa o CPF real do cliente e remove formatação
           },
         },
         notification_url: `${process.env.APP_URL}/api/payment-webhook`, // This will be enabled in production with a public URL
