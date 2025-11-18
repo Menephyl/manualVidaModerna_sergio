@@ -33,6 +33,11 @@ export default async function handler(req, res) {
         },
         // notification_url: `${process.env.APP_URL}/api/payment-webhook`, // This will be enabled in production with a public URL
       },
+      requestOptions: {
+        headers: {
+          'X-Idempotency-Key': `manual-vida-moderna-${Date.now()}` // Prevents accidental duplicate payments
+        }
+      }
     });
 
     const pixData = result.point_of_interaction.transaction_data;
