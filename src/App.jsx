@@ -1,5 +1,6 @@
 import { useState, useEffect, memo } from 'react'
 import { Button } from './components/ui/button.jsx'
+import { Input } from './components/ui/input.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
 import { BibleVerseCarousel } from './components/BibleVerseCarousel.jsx'
@@ -14,11 +15,9 @@ import {
 } from 'lucide-react'
 import heroIllustration from './assets/hero-illustration.png'
 import problemIllustration from './assets/problem-illustration.png'
-import solutionIllustration from './assets/solution-illustration.png'
 import transformationIllustration from './assets/transformation-illustration.png'
 import ebookCover from './assets/ebook-cover.png'
 import { contactInfo, benefits } from './content.js'
-import { QRCodeCanvas } from 'qrcode.react';
 
 const Footer = memo(FooterComponent);
 const WhatsAppButton = memo(WhatsAppButtonComponent);
@@ -26,16 +25,16 @@ const WhatsAppButton = memo(WhatsAppButtonComponent);
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('pix')
+  const [modalPhase, setModalPhase] = useState('input'); // 'input', 'payment', 'success'
   const [copied, setCopied] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false);
   const [buyerName, setBuyerName] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
-  const [buyerCpf, setBuyerCpf] = useState(''); // 1. Adicionar estado para o CPF
   const [pixData, setPixData] = useState(null); // Para guardar os dados do PIX dinâmico
-  const [isPixLoading, setIsPixLoading] = useState(false); // Para mostrar o loading do PIX
-  // const [pixStatus, setPixStatus] = useState('pending'); // 'pending', 'approved' - Desativado para fluxo manual
-  const [pixError, setPixError] = useState(null); // Para guardar mensagens de erro
+  const [paymentError, setPaymentError] = useState(null); // Para guardar mensagens de erro
+
+  const openModal = () => setIsModalOpen(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,44 +55,104 @@ function App() {
     return () => { document.body.style.overflow = 'auto'; };
   }, [isModalOpen]);
 
-  // Efeito para monitorar (polling) o status do pagamento PIX
-  // Lógica de automação PIX desativada para fluxo manual temporário
-  // 2. Função para chamar a API de backend
-  const handleGeneratePix = async (e) => {
-    e.preventDefault();
-    if (!buyerName || !buyerEmail || !buyerCpf) {
-      setPixError('Por favor, preencha todos os campos.');
+  // Polling para status do PIX
+  useEffect(() => {
+    if (modalPhase !== 'payment' || paymentMethod !== 'pix' || !pixData?.paymentId) {
       return;
     }
-    setIsPixLoading(true);
-    setPixError(null);
-    setPixData(null);
 
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/check-stripe-status?paymentId=${pixData.paymentId}`);
+        const data = await response.json();
+
+        if (data.status === 'approved') {
+          setModalPhase('success');
+          clearInterval(intervalId);
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+        // Opcional: parar o polling após X tentativas
+      }
+    }, 5000); // Verifica a cada 5 segundos
+
+    return () => clearInterval(intervalId); // Limpa o intervalo ao desmontar ou mudar de fase
+  }, [modalPhase, paymentMethod, pixData]);
+
+  const handleProceedToPayment = () => {
+    if (!buyerName || !buyerEmail) {
+      setPaymentError('Nome e E-mail são obrigatórios.');
+      return;
+    }
+    setPaymentError(null);
+    setModalPhase('payment');
+
+    if (paymentMethod === 'pix') {
+      handleGeneratePix();
+    } else {
+      handleCheckoutCard();
+    }
+  };
+
+  const handleGeneratePix = async () => {
+    setIsProcessing(true);
     try {
-      const response = await fetch('/api/create-pix-payment', {
+      const response = await fetch('/api/create-stripe-pix', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: buyerName, email: buyerEmail, cpf: buyerCpf }),
+        body: JSON.stringify({ name: buyerName, email: buyerEmail }),
       });
+
       const data = await response.json();
       if (!response.ok) {
-        // Captura o erro vindo da API
-        throw new Error(data.error || 'Falha ao gerar o PIX. Tente novamente.');
+        throw new Error(data.details?.description || data.error || 'Falha ao gerar o PIX.');
       }
-      setPixData(data); // Salva os dados do PIX (QR Code, etc.) no estado
+      setPixData(data);
     } catch (error) {
-      setPixError(error.message);
+      setPaymentError(error.message);
+      setModalPhase('input'); // Volta para a fase de input em caso de erro
     } finally {
-      setIsPixLoading(false);
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCheckoutCard = async () => {
+    setIsProcessing(true);
+    try {
+      const response = await fetch('/api/create-stripe-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: buyerName, email: buyerEmail }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Falha ao iniciar o pagamento com cartão.');
+      }
+
+      // Redireciona para o checkout do Mercado Pago
+      window.location.href = data.url;
+
+    } catch (error) {
+      setPaymentError(error.message);
+      setModalPhase('input'); // Volta para a fase de input
+      setIsProcessing(false);
     }
   };
 
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
-    // setPixData(null); 
-    // setPixStatus('pending'); 
-    setPixData(null); // Limpa dados do PIX ao trocar de método
-    setPixError(null); // Limpa erros
+    setPaymentError(null);
+  };
+
+  const closeModalAndReset = () => {
+    setIsModalOpen(false);
+    setTimeout(() => { // Delay para a animação de fechar
+      setModalPhase('input');
+      setPixData(null);
+      setPaymentError(null);
+      setIsProcessing(false);
+    }, 300);
   };
 
   const copyToClipboard = (text) => {
@@ -175,7 +234,7 @@ function App() {
                   <Button 
                     size="lg" 
                     className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-8 md:px-10 py-4 md:py-5 text-base md:text-lg font-bold shadow-2xl hover:shadow-amber-500/50 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto rounded-xl"
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={openModal}
                   >
                     <Zap className="w-5 h-5 mr-2" />
                     Quero Meu Exemplar Agora
@@ -233,7 +292,7 @@ function App() {
               size="lg"   
               variant="primary"
               className="bg-orange-400 cursor-pointer px-10 py-5 text-lg md:text-xl font-bold  hover:transition-all duration-300 transform hover:scale-105 rounded-xl"
-              onClick={()=> setIsModalOpen(true)}
+              onClick={openModal}
             >
               <Gift className="w-6 h-6 mr-2" />
               Garantir Agora por R$ 47,00
@@ -299,10 +358,11 @@ function App() {
               <div className="relative flex justify-center lg:justify-start">
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-300 to-orange-300 rounded-full blur-3xl opacity-40"></div>
                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500 max-w-md xl:max-w-lg">
-                  <img 
-                    src={solutionIllustration} 
+                  {/* A imagem solutionIllustration.png não foi encontrada, usando heroIllustration como fallback */}
+                  <img
+                    src={heroIllustration}
                     loading="lazy"
-                    alt="Pessoa encontrando clareza e sabedoria" 
+                    alt="Pessoa encontrando clareza e sabedoria"
                     className="w-full rounded-3xl shadow-2xl border-4 border-white/50"
                   />
                 </div>
@@ -363,7 +423,7 @@ function App() {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-10 py-5 text-lg md:text-xl font-bold shadow-2xl hover:shadow-amber-500/50 transition-all duration-300 transform hover:scale-105 rounded-xl"
-              onClick={() => setIsModalOpen(true)}
+              onClick={openModal}
             >
               <BookOpen className="w-6 h-6 mr-2" />
               Adquirir Agora
@@ -472,7 +532,7 @@ function App() {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-8 md:px-10 py-4 md:py-5 text-base md:text-lg font-bold shadow-2xl hover:shadow-amber-500/50 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto rounded-xl"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={openModal}
                 >
                   <BookOpen className="w-5 h-5 mr-2" />
                   Quero Começar Agora
@@ -537,7 +597,7 @@ function App() {
                 <Button 
                   size="lg" 
                   className="bg-black text-white hover:bg-gray-900 px-12 md:px-16 lg:px-20 py-4 md:py-5  md:text-2xl font-bold shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 rounded-2xl"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={openModal}
                 >
                   <Gift className="w-6 h-6 mr-3" />
                   Garantir Meu Exemplar 
@@ -568,100 +628,102 @@ function App() {
       {isModalOpen && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-          onClick={(e) => e.target === e.currentTarget && setIsModalOpen(false)}
+          onClick={(e) => e.target === e.currentTarget && closeModalAndReset()}
         >
-          <div className="bg-white rounded-2xl p-4 max-w-sm w-full max-h-[95vh] overflow-y-auto shadow-2xl border-2 border-amber-200">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-bold text-gray-900 text-center flex-1">Adquirir Manual</h3>
+          <div className="bg-white rounded-2xl p-4 sm:p-6 max-w-md w-full max-h-[95vh] overflow-y-auto shadow-2xl border-2 border-amber-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-900">
+                {modalPhase === 'success' ? 'Pagamento Aprovado!' : 'Adquirir Manual'}
+              </h3>
               <Button
-                onClick={() => setIsModalOpen(false)}
+                onClick={closeModalAndReset}
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-full ml-2"
+                className="h-9 w-9 rounded-full"
               >
                 <X className="w-5 h-5 text-gray-600" />
               </Button>
             </div>
 
-            {/* Seleção de método */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <button
-                onClick={() => handlePaymentMethodChange('pix')} 
-                className={`p-3 rounded-xl border-2 transition-all duration-200 text-center ${
-                  paymentMethod === 'pix' ? 'border-amber-600 bg-amber-50 text-amber-700 shadow-lg' : 'border-gray-200 bg-white'
-                }`}
-              >
-                <QrCode className="w-5 h-5 mx-auto mb-1" />
-                <div className="font-semibold text-sm">PIX</div>
-              </button>
-
-              <button
-                onClick={() => handlePaymentMethodChange('card')}
-                className={`p-3 rounded-xl border-2 transition-all duration-200 text-center ${
-                  paymentMethod === 'card' ? 'border-amber-600 bg-amber-50 text-amber-700 shadow-lg' : 'border-gray-200 bg-white'
-                }`}
-              >
-                <CreditCard className="w-5 h-5 mx-auto mb-1" />
-                <div className="font-semibold text-sm">Cartão</div>
-              </button>
-            </div>
-
-            {/* Conteúdo PIX */}
-            {paymentMethod === 'pix' ? (
-              <>
-                <div className="space-y-2 text-center">
-                  <p className="text-sm font-medium text-gray-700">Escaneie ou copie o código PIX</p>
-                  <div className="bg-white p-1.5 rounded-lg inline-block shadow-md border border-amber-200">
-                    <QRCodeCanvas
-                      value={contactInfo.pixCode}
-                      size={128}
-                      bgColor={"#ffffff"}
-                      fgColor={"#000000"}
-                      level={"L"}
-                      includeMargin={false}
-                    />
-                  </div>
-                  <div className="relative flex items-center justify-between bg-gray-100 p-2.5 rounded-lg border border-gray-200 text-left break-words">
-                    <pre className="text-xs font-mono text-gray-800 whitespace-pre-wrap flex-1 break-all">{contactInfo.pixCode}</pre> 
-                    <button title="Copiar código PIX" onClick={() => copyToClipboard(contactInfo.pixCode)} className="p-2 rounded-md hover:bg-gray-200 transition-colors ml-2">
-                      {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-600" />}
-                    </button>
-                  </div>
-                  <div className="pt-2">
-                    <Button
-                      onClick={() => window.location.href = 'https://api.whatsapp.com/send?phone=554497164827&text=ol%C3%A1+quero+falar+sobre+o+livro,+comprei+segue+comprovante+abaixo'}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
-                    >
-                      <CheckCircle className="w-5 h-5 mr-2" />
-                      Já Paguei, Enviar Comprovante
-                    </Button>
-                  </div>
+            {/* --- FASE 1: INPUT DE DADOS --- */}
+            {modalPhase === 'input' && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <button onClick={() => handlePaymentMethodChange('pix')} className={`p-3 rounded-xl border-2 transition-all duration-200 text-center flex flex-col items-center justify-center gap-1 ${paymentMethod === 'pix' ? 'border-amber-600 bg-amber-50 text-amber-700 shadow-md' : 'border-gray-200 bg-white'}`}>
+                    <QrCode className="w-5 h-5" />
+                    <span className="font-semibold text-sm">PIX</span>
+                  </button>
+                  <button onClick={() => handlePaymentMethodChange('card')} className={`p-3 rounded-xl border-2 transition-all duration-200 text-center flex flex-col items-center justify-center gap-1 ${paymentMethod === 'card' ? 'border-amber-600 bg-amber-50 text-amber-700 shadow-md' : 'border-gray-200 bg-white'}`}>
+                    <CreditCard className="w-5 h-5" />
+                    <span className="font-semibold text-sm">Cartão</span>
+                  </button>
                 </div>
-              </>
-            ) : null}
 
-            {paymentMethod === 'card' && (
-              <div className="text-center space-y-3 pt-2">
-                <p className="text-sm font-semibold text-gray-800">Pagamento seguro com Cartão</p>
-                <p className="text-sm text-gray-600">Você será redirecionado para a página de pagamento segura do Mercado Pago.</p>
-                <button
-                  onClick={() => window.location.href = contactInfo.mercadoPagoLink}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-blue-600 transition-colors shadow-lg"
-                >
-                  <CreditCard className="w-5 h-5" />
-                  Ir para o Pagamento
-                </button>
+                <div className="space-y-3">
+                  <Input type="text" placeholder="Nome Completo" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} required />
+                  <Input type="email" placeholder="Seu melhor e-mail" value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} required />
+                </div>
+
+                {paymentError && <p className="text-sm text-red-600 text-center">{paymentError}</p>}
+
+                <Button onClick={handleProceedToPayment} disabled={isProcessing} className="w-full bg-amber-600 hover:bg-amber-700 text-lg py-3 h-auto">
+                  {isProcessing ? <Loader2 className="w-6 h-6 animate-spin" /> : (paymentMethod === 'pix' ? 'Gerar PIX' : 'Pagar com Cartão')}
+                </Button>
               </div>
             )}
 
-            <div className="mt-3 border-t pt-3">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="w-full text-gray-600 font-medium py-2 rounded-lg hover:bg-gray-100 transition-colors text-sm"
-              >
-                Fechar
-              </button>
-            </div>
+            {/* --- FASE 2: PAGAMENTO --- */}
+            {modalPhase === 'payment' && (
+              <div className="text-center">
+                {isProcessing && (
+                  <div className="flex flex-col items-center justify-center gap-4 p-8">
+                    <Loader2 className="w-12 h-12 animate-spin text-amber-600" />
+                    <p className="text-gray-600 font-medium">
+                      {paymentMethod === 'pix' ? 'Gerando seu código PIX...' : 'Redirecionando para o pagamento...'}
+                    </p>
+                  </div>
+                )}
+
+                {/* Conteúdo PIX */}
+                {paymentMethod === 'pix' && pixData && (
+                  <div className="space-y-4">
+                    <p className="font-semibold text-gray-800">Pagamento via PIX</p>
+                    <p className="text-sm text-gray-600">Escaneie o QR Code ou use o Copia e Cola.</p>
+                    <div className="p-2 bg-white rounded-lg inline-block shadow-md border">
+                      <img src={pixData.qrCodeUrl} alt="QR Code PIX" className="w-[180px] h-[180px]" />
+                    </div>
+                    <div className="relative flex items-center bg-gray-100 p-2.5 rounded-lg border text-left">
+                      <pre className="text-xs font-mono text-gray-700 whitespace-pre-wrap break-all flex-1">{pixData.qrCodeString}</pre>
+                      <button title="Copiar código" onClick={() => copyToClipboard(pixData.qrCodeString)} className="p-2 rounded-md hover:bg-gray-200 ml-2 flex-shrink-0">
+                        {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-500" />}
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-center gap-3 pt-2 text-amber-700">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span className="font-medium">Aguardando pagamento...</span>
+                    </div>
+                     <p className="text-xs text-gray-500">Manteremos esta janela aberta. A confirmação é automática.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* --- FASE 3: SUCESSO (Apenas para PIX no modal) --- */}
+            {modalPhase === 'success' && (
+              <div className="text-center space-y-5 p-4">
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-2" />
+                <p className="text-lg text-gray-800">Seu pagamento foi confirmado com sucesso!</p>
+                <p className="text-sm text-gray-600">Clique no botão abaixo para baixar seu e-book.</p>
+                <Button asChild size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold">
+                  <a href="/manual-vida-moderna.pdf" download>
+                    <Download className="mr-2 h-5 w-5" />
+                    Baixar meu E-book
+                  </a>
+                </Button>
+                 <p className="text-xs text-gray-500 pt-2">Uma cópia também será enviada para o seu e-mail.</p>
+              </div>
+            )}
+
           </div>
         </div>
       )}
