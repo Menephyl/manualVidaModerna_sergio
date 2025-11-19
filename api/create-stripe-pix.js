@@ -12,26 +12,31 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Email e nome são obrigatórios.' });
     }
 
-    // Cria um PaymentIntent com o método de pagamento PIX
-    const paymentIntent = await stripe.paymentIntents.create({
-      // amount: 4700, // R$ 47,00 em centavos
+    // 1. Cria um PaymentIntent
+    let paymentIntent = await stripe.paymentIntents.create({
       amount: 50, // R$ 0,50 (mínimo para teste)
       currency: 'brl',
-      payment_method_types: ['pix'],
-      receipt_email: email,
-      description: 'Manual da Vida Moderna - Ebook',
       metadata: {
         customer_name: name,
         customer_email: email,
       },
     });
 
+    // 2. Confirma o PaymentIntent para gerar os dados do PIX
+    // Esta é a etapa que estava faltando.
+    paymentIntent = await stripe.paymentIntents.confirm(paymentIntent.id, {
+      payment_method_data: {
+        type: 'pix',
+      },
+    });
+
+    // 3. Agora, o next_action conterá os dados do QR Code
     const pixData = paymentIntent.next_action.pix_display_qr_code;
 
     res.status(201).json({
       paymentId: paymentIntent.id,
       qrCodeString: pixData.data, // O código "Copia e Cola"
-      qrCodeUrl: pixData.image_url_png, // URL da imagem do QR Code
+      qrCodeUrl: pixData.image_url_svg, // Priorizar SVG para melhor qualidade
     });
 
   } catch (error) {

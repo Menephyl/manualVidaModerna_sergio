@@ -20,7 +20,7 @@ export default async function handler(req, res) {
           price_data: {
             currency: 'brl',
             product_data: {
-              name: 'Manual da Vida Moderna',
+              name: 'Manual da Vida Moderna', // O nome que aparece no checkout
               images: [`${process.env.APP_URL}/ebook-cover.png`],
             },
             // unit_amount: 4700, // R$ 47,00 em centavos

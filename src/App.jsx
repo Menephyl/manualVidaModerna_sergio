@@ -16,13 +16,14 @@ import {
 import heroIllustration from './assets/hero-illustration.png'
 import problemIllustration from './assets/problem-illustration.png'
 import transformationIllustration from './assets/transformation-illustration.png'
-import ebookCover from './assets/ebook-cover.png'
+import ebookCover from './assets/ebook-cover.png';
 import { contactInfo, benefits } from './content.js'
 
 const Footer = memo(FooterComponent);
 const WhatsAppButton = memo(WhatsAppButtonComponent);
 
-function App() {
+// Componente principal da Landing Page
+function LandingPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('pix')
   const [modalPhase, setModalPhase] = useState('input'); // 'input', 'payment', 'success'
@@ -738,4 +739,4 @@ function App() {
   )
 }
 
-export default App
+export default LandingPage;

@@ -27,6 +27,10 @@ for (const file of apiFiles) {
     try {
       console.log(`[API Server] Handling request for: ${route}`);
       const { default: handler } = await import(modulePath);
+      if (typeof handler !== 'function') {
+        console.error(`[API Server] Error: No default export function found in ${file}`);
+        return res.status(500).send('Internal Server Error: Invalid handler configuration.');
+      }
       await handler(req, res);
     } catch (error) {
       console.error(`[API Server] Error handling request for ${route}:`, error);
