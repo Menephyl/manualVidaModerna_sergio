@@ -40,6 +40,8 @@ http.createServer(app).listen(port, () => {
   console.log(`✅ API server is running and listening on http://localhost:${port}`);
   console.log('Registered API routes:', apiFiles.map(f => `/api/${f.replace('.js', '')}`).join(', '));
   // Log para confirmar que a variável de ambiente foi carregada
-  const token = process.env.MP_ACCESS_TOKEN;
-  console.log(`🔑 Mercado Pago Token Loaded: ${token ? `...${token.slice(-6)}` : 'NOT FOUND'}`);
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  console.log(`🔑 Stripe Secret Key Loaded: ${stripeKey ? `...${stripeKey.slice(-6)}` : 'NOT FOUND'}`);
+  const resendKey = process.env.RESEND_API_KEY;
+  console.log(`🔑 Resend API Key Loaded: ${resendKey ? 'FOUND' : 'NOT FOUND'}`);
 });
