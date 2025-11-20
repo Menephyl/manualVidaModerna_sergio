@@ -1,7 +1,6 @@
 import { useState, useEffect, memo } from 'react'
 import { Button } from './components/ui/button.jsx'
 import { Input } from './components/ui/input.jsx'
-import QRCode from 'qrcode.react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
 import { BibleVerseCarousel } from './components/BibleVerseCarousel.jsx'
@@ -17,23 +16,20 @@ import {
 import heroIllustration from './assets/hero-illustration.png'
 import problemIllustration from './assets/problem-illustration.png'
 import transformationIllustration from './assets/transformation-illustration.png'
-import ebookCover from './assets/ebook-cover.png';
-import { contactInfo, benefits, socialLinks } from './content.js'
+import ebookCover from './assets/ebook-cover.png'
+import { contactInfo, benefits } from './content.js'
 
 const Footer = memo(FooterComponent);
 const WhatsAppButton = memo(WhatsAppButtonComponent);
 
-// Componente principal da Landing Page
-function LandingPage() {
+function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState('pix')
   const [modalPhase, setModalPhase] = useState('input'); // 'input', 'payment', 'success'
   const [copied, setCopied] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false);
   const [buyerName, setBuyerName] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
-  const [pixData, setPixData] = useState(null); // Para guardar os dados do PIX dinâmico
   const [paymentError, setPaymentError] = useState(null); // Para guardar mensagens de erro
 
   const openModal = () => setIsModalOpen(true);
@@ -57,85 +53,22 @@ function LandingPage() {
     return () => { document.body.style.overflow = 'auto'; };
   }, [isModalOpen]);
 
-  // // Polling para status do PIX (Lógica do Stripe - Comentada)
-  // useEffect(() => {
-  //   if (modalPhase !== 'payment' || paymentMethod !== 'pix' || !pixData?.paymentId) {
-  //     return;
-  //   }
-
-  //   const intervalId = setInterval(async () => {
-  //     try {
-  //       const response = await fetch(`/api/check-stripe-status?paymentId=${pixData.paymentId}`);
-  //       const data = await response.json();
-
-  //       if (data.status === 'approved') {
-  //         setModalPhase('success');
-  //         clearInterval(intervalId);
-  //       }
-  //     } catch (error) {
-  //       console.error('Polling error:', error);
-  //       // Opcional: parar o polling após X tentativas
-  //     }
-  //   }, 5000); // Verifica a cada 5 segundos
-
-  //   return () => clearInterval(intervalId); // Limpa o intervalo ao desmontar ou mudar de fase
-  // }, [modalPhase, paymentMethod, pixData]);
-
   const handleProceedToPayment = () => {
     if (!buyerName || !buyerEmail) {
       setPaymentError('Nome e E-mail são obrigatórios.');
       return;
     }
     setPaymentError(null);
-    setModalPhase('payment');
-
-    if (paymentMethod === 'pix') {
-      handleGeneratePix();
-    } else {
-      handleCheckoutCard();
-    }
-  };
-
-  const handleGeneratePix = async () => {
     setIsProcessing(true);
-    // Lógica do Mercado Pago: Apenas avança para a fase de pagamento
-    // O QR Code e a chave PIX são estáticos e vêm do content.js
-    setPixData({ qrCodeString: contactInfo.pixCode });
-    setIsProcessing(false);
-  };
-
-  const handleCheckoutCard = async () => {
-    setIsProcessing(true);
-    // Lógica do Mercado Pago: Redireciona diretamente para o link de pagamento
+    // Lógica Unificada: Redireciona para o link de pagamento do Mercado Pago,
+    // onde o cliente escolherá o método (PIX, Cartão, etc.).
     window.location.href = contactInfo.mercadoPagoLink;
-    // try {
-    //   const response = await fetch('/api/create-stripe-checkout', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ name: buyerName, email: buyerEmail }),
-    //   });
-    //   const data = await response.json();
-    //   if (!response.ok) {
-    //     throw new Error(data.error || 'Falha ao iniciar o pagamento com cartão.');
-    //   }
-    //   window.location.href = data.url;
-    // } catch (error) {
-    //   setPaymentError(error.message);
-    //   setModalPhase('input'); // Volta para a fase de input
-    //   setIsProcessing(false);
-    // }
-  };
-
-  const handlePaymentMethodChange = (method) => {
-    setPaymentMethod(method);
-    setPaymentError(null);
   };
 
   const closeModalAndReset = () => {
     setIsModalOpen(false);
     setTimeout(() => { // Delay para a animação de fechar
       setModalPhase('input');
-      setPixData(null);
       setPaymentError(null);
       setIsProcessing(false);
     }, 300);
@@ -634,63 +567,28 @@ function LandingPage() {
             {/* --- FASE 1: INPUT DE DADOS --- */}
             {modalPhase === 'input' && (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <button onClick={() => handlePaymentMethodChange('pix')} className={`p-3 rounded-xl border-2 transition-all duration-200 text-center flex flex-col items-center justify-center gap-1 ${paymentMethod === 'pix' ? 'border-amber-600 bg-amber-50 text-amber-700 shadow-md' : 'border-gray-200 bg-white'}`}>
-                    <QrCode className="w-5 h-5" />
-                    <span className="font-semibold text-sm">PIX</span>
-                  </button>
-                  <button onClick={() => handlePaymentMethodChange('card')} className={`p-3 rounded-xl border-2 transition-all duration-200 text-center flex flex-col items-center justify-center gap-1 ${paymentMethod === 'card' ? 'border-amber-600 bg-amber-50 text-amber-700 shadow-md' : 'border-gray-200 bg-white'}`}>
-                    <CreditCard className="w-5 h-5" />
-                    <span className="font-semibold text-sm">Cartão</span>
-                  </button>
-                </div>
-
                 <div className="space-y-3">
                   <Input type="text" placeholder="Nome Completo" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} required />
                   <Input type="email" placeholder="Seu melhor e-mail" value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} required />
                 </div>
 
+                <p className="text-xs text-center text-gray-500 pt-2">Você será redirecionado para a página de pagamento segura do Mercado Pago, onde poderá escolher entre PIX, Cartão e outros métodos.</p>
+
                 {paymentError && <p className="text-sm text-red-600 text-center">{paymentError}</p>}
 
                 <Button onClick={handleProceedToPayment} disabled={isProcessing} className="w-full bg-amber-600 hover:bg-amber-700 text-lg py-3 h-auto">
-                  {isProcessing ? <Loader2 className="w-6 h-6 animate-spin" /> : (paymentMethod === 'pix' ? 'Gerar PIX' : 'Pagar com Cartão')}
+                  {isProcessing ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Ir para o Pagamento'}
                 </Button>
               </div>
             )}
 
             {/* --- FASE 2: PAGAMENTO --- */}
-            {modalPhase === 'payment' && (
+            {isProcessing && (
               <div className="text-center">
-                {isProcessing && (
-                  <div className="flex flex-col items-center justify-center gap-4 p-8">
-                    <Loader2 className="w-12 h-12 animate-spin text-amber-600" />
-                    <p className="text-gray-600 font-medium">
-                      {paymentMethod === 'pix' ? 'Gerando seu código PIX...' : 'Redirecionando para o pagamento...'}
-                    </p>
-                  </div>
-                )}
-
-                {/* Conteúdo PIX */}
-                {paymentMethod === 'pix' && pixData && (
-                  <div className="space-y-4">
-                    <p className="font-semibold text-gray-800">Pagamento via PIX</p>
-                    <p className="text-sm text-gray-600">Escaneie o QR Code ou use o Copia e Cola.</p>
-                    <div className="p-2 bg-white rounded-lg inline-block shadow-md border">
-                      <img src={pixData.qrCodeUrl} alt="QR Code PIX" className="w-[180px] h-[180px]" />
-                    </div>
-                    <div className="relative flex items-center bg-gray-100 p-2.5 rounded-lg border text-left">
-                      <pre className="text-xs font-mono text-gray-700 whitespace-pre-wrap break-all flex-1">{pixData.qrCodeString}</pre>
-                      <button title="Copiar código" onClick={() => copyToClipboard(pixData.qrCodeString)} className="p-2 rounded-md hover:bg-gray-200 ml-2 flex-shrink-0">
-                        {copied ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-500" />}
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-center gap-3 pt-2 text-amber-700">
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span className="font-medium">Aguardando pagamento...</span>
-                    </div>
-                     <p className="text-xs text-gray-500">Manteremos esta janela aberta. A confirmação é automática.</p>
-                  </div>
-                )}
+                <div className="flex flex-col items-center justify-center gap-4 p-8">
+                  <Loader2 className="w-12 h-12 animate-spin text-amber-600" />
+                  <p className="text-gray-600 font-medium">Redirecionando para o pagamento...</p>
+                </div>
               </div>
             )}
 
@@ -724,4 +622,4 @@ function LandingPage() {
   )
 }
 
-export default LandingPage;
+export default App
