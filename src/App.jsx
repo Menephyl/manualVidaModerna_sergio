@@ -1,6 +1,7 @@
 import { useState, useEffect, memo } from 'react'
 import { Button } from './components/ui/button.jsx'
 import { Input } from './components/ui/input.jsx'
+import QRCode from 'qrcode.react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
 import { BibleVerseCarousel } from './components/BibleVerseCarousel.jsx'
@@ -17,7 +18,7 @@ import heroIllustration from './assets/hero-illustration.png'
 import problemIllustration from './assets/problem-illustration.png'
 import transformationIllustration from './assets/transformation-illustration.png'
 import ebookCover from './assets/ebook-cover.png';
-import { contactInfo, benefits } from './content.js'
+import { contactInfo, benefits, socialLinks } from './content.js'
 
 const Footer = memo(FooterComponent);
 const WhatsAppButton = memo(WhatsAppButtonComponent);
@@ -56,29 +57,29 @@ function LandingPage() {
     return () => { document.body.style.overflow = 'auto'; };
   }, [isModalOpen]);
 
-  // Polling para status do PIX
-  useEffect(() => {
-    if (modalPhase !== 'payment' || paymentMethod !== 'pix' || !pixData?.paymentId) {
-      return;
-    }
+  // // Polling para status do PIX (Lógica do Stripe - Comentada)
+  // useEffect(() => {
+  //   if (modalPhase !== 'payment' || paymentMethod !== 'pix' || !pixData?.paymentId) {
+  //     return;
+  //   }
 
-    const intervalId = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/check-stripe-status?paymentId=${pixData.paymentId}`);
-        const data = await response.json();
+  //   const intervalId = setInterval(async () => {
+  //     try {
+  //       const response = await fetch(`/api/check-stripe-status?paymentId=${pixData.paymentId}`);
+  //       const data = await response.json();
 
-        if (data.status === 'approved') {
-          setModalPhase('success');
-          clearInterval(intervalId);
-        }
-      } catch (error) {
-        console.error('Polling error:', error);
-        // Opcional: parar o polling após X tentativas
-      }
-    }, 5000); // Verifica a cada 5 segundos
+  //       if (data.status === 'approved') {
+  //         setModalPhase('success');
+  //         clearInterval(intervalId);
+  //       }
+  //     } catch (error) {
+  //       console.error('Polling error:', error);
+  //       // Opcional: parar o polling após X tentativas
+  //     }
+  //   }, 5000); // Verifica a cada 5 segundos
 
-    return () => clearInterval(intervalId); // Limpa o intervalo ao desmontar ou mudar de fase
-  }, [modalPhase, paymentMethod, pixData]);
+  //   return () => clearInterval(intervalId); // Limpa o intervalo ao desmontar ou mudar de fase
+  // }, [modalPhase, paymentMethod, pixData]);
 
   const handleProceedToPayment = () => {
     if (!buyerName || !buyerEmail) {
@@ -97,48 +98,32 @@ function LandingPage() {
 
   const handleGeneratePix = async () => {
     setIsProcessing(true);
-    try {
-      const response = await fetch('/api/create-stripe-pix', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: buyerName, email: buyerEmail }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.details?.description || data.error || 'Falha ao gerar o PIX.');
-      }
-      setPixData(data);
-    } catch (error) {
-      setPaymentError(error.message);
-      setModalPhase('input'); // Volta para a fase de input em caso de erro
-    } finally {
-      setIsProcessing(false);
-    }
+    // Lógica do Mercado Pago: Apenas avança para a fase de pagamento
+    // O QR Code e a chave PIX são estáticos e vêm do content.js
+    setPixData({ qrCodeString: contactInfo.pixCode });
+    setIsProcessing(false);
   };
 
   const handleCheckoutCard = async () => {
     setIsProcessing(true);
-    try {
-      const response = await fetch('/api/create-stripe-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: buyerName, email: buyerEmail }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Falha ao iniciar o pagamento com cartão.');
-      }
-
-      // Redireciona para o checkout do Mercado Pago
-      window.location.href = data.url;
-
-    } catch (error) {
-      setPaymentError(error.message);
-      setModalPhase('input'); // Volta para a fase de input
-      setIsProcessing(false);
-    }
+    // Lógica do Mercado Pago: Redireciona diretamente para o link de pagamento
+    window.location.href = contactInfo.mercadoPagoLink;
+    // try {
+    //   const response = await fetch('/api/create-stripe-checkout', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ name: buyerName, email: buyerEmail }),
+    //   });
+    //   const data = await response.json();
+    //   if (!response.ok) {
+    //     throw new Error(data.error || 'Falha ao iniciar o pagamento com cartão.');
+    //   }
+    //   window.location.href = data.url;
+    // } catch (error) {
+    //   setPaymentError(error.message);
+    //   setModalPhase('input'); // Volta para a fase de input
+    //   setIsProcessing(false);
+    // }
   };
 
   const handlePaymentMethodChange = (method) => {

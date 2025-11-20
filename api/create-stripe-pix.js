@@ -12,21 +12,18 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Email e nome são obrigatórios.' });
     }
 
-    // 1. Cria um PaymentIntent
-    let paymentIntent = await stripe.paymentIntents.create({
+    // Abordagem explícita e robusta para criar um pagamento PIX.
+    const paymentIntent = await stripe.paymentIntents.create({
       amount: 50, // R$ 0,50 (mínimo para teste)
       currency: 'brl',
+      // 1. Especificamos o método de pagamento que queremos.
+      payment_method_types: ['pix'],
+      // 2. Fornecemos os dados do método de pagamento na criação.
+      // Isso evita a necessidade de uma chamada de confirmação separada.
+      payment_method_options: { pix: { expires_at: Math.floor(Date.now() / 1000) + 3600 } }, // Expira em 1 hora
       metadata: {
         customer_name: name,
         customer_email: email,
-      },
-    });
-
-    // 2. Confirma o PaymentIntent para gerar os dados do PIX
-    // Esta é a etapa que estava faltando.
-    paymentIntent = await stripe.paymentIntents.confirm(paymentIntent.id, {
-      payment_method_data: {
-        type: 'pix',
       },
     });
 

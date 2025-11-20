@@ -7,7 +7,6 @@ const path = require('path');
 const url = require('url');
 
 const app = express();
-app.use(express.json());
 
 // Add a root route handler for health checks and developer experience
 app.get('/', (req, res) => {
@@ -22,8 +21,13 @@ for (const file of apiFiles) {
   const route = `/api/${routeName}`;
   // Use file URL to ensure correct module resolution
   const modulePath = url.pathToFileURL(path.join(apiDir, file)).href;
+
+  // Conditionally apply json parser. The webhook needs the raw body.
+  const middleware = route === '/api/stripe-webhook'
+    ? (req, res, next) => next() // Do nothing for the webhook
+    : express.json(); // Use JSON parser for all other routes
   
-  app.all(route, async (req, res) => {
+  app.all(route, middleware, async (req, res) => {
     try {
       console.log(`[API Server] Handling request for: ${route}`);
       const { default: handler } = await import(modulePath);

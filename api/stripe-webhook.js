@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     try {
       const adminEmailPromise = resend.emails.send({
         from: fromEmail,
-        to: ['contato@sergiodiasfilho.com', 'ymenephyl@gmail.com'],
+        to: ['contato@sergiodiasfilho.com', 'ysogeek@hotmail.com'],
         subject: '🎉 [Stripe] Nova Venda do Manual!',
         html: `
           <h1>Venda Confirmada via Stripe!</h1>
