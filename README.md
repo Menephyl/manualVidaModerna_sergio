@@ -167,4 +167,13 @@ O projeto pode ser deployado em qualquer plataforma que suporte aplicações Rea
 - Email: contato@sergiodiasfilho.com
 - WhatsApp: +55 44 9716-4827
 
+ at   APP_USR-669226449513703-111713-49b0494ab65ff1b310aef6c8e1c6f8a0-284659356
 
+ pk  APP_USR-648ecb8c-df09-436c-9c77-fc600b237c8c
+
+PROMPT 
+I need you to help me create an API using Node.js with Express using the MercadoPago SDK. I need an endpoint that returns the PIX code in base64 and the copy-and-paste code. It must follow Node.js best practices for building the API; the API should be inside the api folder and the front-end in the front folder.
+
+After creating the API, you must integrate the created endpoint into my front-end inside the front folder, where we should ask the user only for the information required for the MercadoPago request to work. When the user clicks the submit button, we call the endpoint we created. If there is any error we must show feedback to the user; if everything goes well we must display the QR code using the base64 data as a local image (data:...), and also show the PIX copy-and-paste code alongside it.
+
+We also need to implement a webhook endpoint to register with MercadoPago so that when MercadoPago identifies the payment it will call our webhook and an email will be sent to the customer who made the payment. Plan all the steps and ask me if I forgot any detail. Once you have all the answers, implement the two API endpoints (generate PIX and webhook) and also the front-end part. Don’t forget to send the webhook URL to MercadoPago using the notificationUrl; research the documentation online to understand how this works.
