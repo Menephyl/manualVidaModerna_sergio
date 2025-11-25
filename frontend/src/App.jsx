@@ -1,14 +1,11 @@
 import { useState, useEffect, memo } from 'react'
 import { Button } from './components/ui/button.jsx'
 import { Input } from './components/ui/input.jsx'
-import { PaymentPix } from './components/PaymentPix.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
 import { BibleVerseCarousel } from './components/BibleVerseCarousel.jsx'
 import { InstagramCarousel } from './components/InstagramCarousel.jsx'
-import { WhatsAppButton as WhatsAppButtonComponent } from './components/WhatsAppButton.jsx'
 import { ScrollReveal } from './components/ScrollReveal.jsx'
-import { Footer as FooterComponent } from './components/Footer.jsx'
 import { 
   CheckCircle, Star, BookOpen, Users, Heart, Lightbulb, Target, Shield, Sparkles, Zap, Smartphone,
   TrendingUp, X, CreditCard, QrCode, Copy, Instagram, Facebook, Mail, ExternalLink, MessageCircle,
@@ -20,9 +17,9 @@ import problemIllustration from './assets/problem-illustration.png'
 import transformationIllustration from './assets/transformation-illustration.png'
 import ebookCover from './assets/ebook-cover.png'
 import { contactInfo, benefits } from './content.js'
-
-const Footer = memo(FooterComponent);
-const WhatsAppButton = memo(WhatsAppButtonComponent);
+import { PaymentPix } from './components/PaymentPix.jsx'
+import { Footer } from './components/Footer.jsx'
+import { FAQ } from './components/FAQ.jsx'
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -84,7 +81,7 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: buyerEmail,
-          amount: 0.50, // Valor do produto (temporário para teste)
+          amount: 46.99, // Valor do produto
         }),
       });
 
@@ -249,7 +246,7 @@ function App() {
               onClick={openModal}
             >
               <Gift className="w-6 h-6 mr-2" />
-              Garantir Agora por R$ 47,00
+              Garantir Agora por R$ 46,99
               <ArrowRight className="w-6 h-6 ml-2" />
             </Button>
           </div>
@@ -517,6 +514,11 @@ function App() {
         </section>
       </ScrollReveal>
 
+      {/* FAQ Section */}
+      <ScrollReveal direction="up" delay={100}>
+        <FAQ />
+      </ScrollReveal>
+
       {/* CTA Final Section Melhorado */}
       <ScrollReveal direction="up" delay={100}>
         <section className="py-20 md:py-28 lg:py-32 px-4 sm:px-6 lg:px-12 xl:px-20 bg-gradient-to-r from-amber-600 via-amber-700 to-orange-600 text-white relative overflow-hidden">
@@ -538,7 +540,7 @@ function App() {
               <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 md:p-10 lg:p-12 mb-6 border-2 border-white/20 shadow-2xl z-10 relative">
                 <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 opacity-90">De R$ 97,00 por apenas</div>
                 <div className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 bg-gradient-to-r from-white to-amber-100 bg-clip-text text-transparent">
-                  R$ 47,00
+                  R$ 46,99
                 </div>
                 <div className="text-lg md:text-xl lg:text-2xl opacity-90 flex items-center justify-center gap-2">
                   <Clock className="w-5 h-5 lg:w-6 lg:h-6" />
@@ -643,7 +645,7 @@ function App() {
                 <p className="text-lg text-gray-800">Seu pagamento foi confirmado com sucesso!</p>
                 <p className="text-sm text-gray-600">Clique no botão abaixo para baixar seu e-book.</p>
                 <Button asChild size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold">
-                  <a href={ebookPdf} download="manual-vida-moderna.pdf">
+                  <a href={ebookPdf} download="manual-vida-moderna.pdf" className="flex items-center justify-center">
                     <Download className="mr-2 h-5 w-5" />
                     Baixar meu E-book
                   </a>
@@ -658,9 +660,6 @@ function App() {
 
       {/* Footer */}
       <Footer />
-
-      {/* Botão flutuante/aux */}
-      <WhatsAppButton />
 
     </div>
   )
