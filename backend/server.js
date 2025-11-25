@@ -2,6 +2,7 @@ import express from 'express';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import cors from 'cors';
 import 'dotenv/config';
+import { sendSaleNotificationEmail } from './services/emailService.js';
 
 // 1. Backend Setup
 const app = express();
@@ -68,15 +69,28 @@ app.get('/api/payment/:id', async (req, res) => {
  * Rota 2: POST /api/webhook
  * Recebe notificações de status de pagamento do Mercado Pago.
  */
-app.post('/api/webhook', (req, res) => {
-  console.log('--- Webhook Recebido ---');
-  console.log('Query:', req.query); // O Mercado Pago envia informações aqui
-  console.log('Body:', req.body);
-  
-  // Aqui você buscaria o pagamento e, se aprovado, enviaria o e-mail.
-  // Ex: if (req.body.type === 'payment' && req.body.action === 'payment.updated') { ... }
+app.post('/api/webhook', async (req, res) => {
+  const { type, data } = req.body;
 
-  res.status(200).send('OK'); // Responda imediatamente com 200 OK
+  // Verificamos se a notificação é de um pagamento
+  if (type === "payment") {
+    try {
+      // Buscamos os detalhes do pagamento usando o ID recebido
+      const paymentDetails = await payment.get({ id: data.id });
+
+      // Se o pagamento foi aprovado, enviamos o e-mail de notificação
+      if (paymentDetails.status === "approved") {
+        console.log(`Pagamento ${data.id} aprovado. Enviando notificação...`);
+        await sendSaleNotificationEmail(paymentDetails);
+      }
+    } catch (error) {
+      console.error("Erro ao processar webhook:", error);
+      return res.sendStatus(500); // Informa ao Mercado Pago que houve um erro
+    }
+  }
+
+  // Respondemos com 200 OK para o Mercado Pago saber que recebemos a notificação.
+  res.sendStatus(200);
 });
 
 app.listen(port, () => {
