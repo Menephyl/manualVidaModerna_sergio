@@ -76,10 +76,18 @@ app.post('/api/webhook', async (req, res) => {
   if (type === "payment") {
     try {
       // Buscamos os detalhes do pagamento usando o ID recebido
-      const paymentDetails = await payment.get({ id: data.id });
+      const paymentDetails = await payment.get({ id: data.id }).catch(error => {
+        // Se o pagamento não for encontrado (erro 404), não é um erro fatal.
+        // Apenas registramos e seguimos em frente, pois pode ser uma notificação de teste.
+        if (error.status === 404) {
+          console.log(`Webhook: Pagamento com ID ${data.id} não encontrado. Provavelmente é um teste.`);
+          return null; // Retorna nulo para que o código abaixo não execute.
+        }
+        throw error; // Se for outro erro (ex: 403), relança para ser pego pelo catch principal.
+      });
 
-      // Se o pagamento foi aprovado, enviamos o e-mail de notificação
-      if (paymentDetails.status === "approved") {
+      // Se o pagamento foi encontrado e está aprovado, enviamos o e-mail.
+      if (paymentDetails && paymentDetails.status === "approved") {
         console.log(`Pagamento ${data.id} aprovado. Enviando notificação...`);
         await sendSaleNotificationEmail(paymentDetails);
       }

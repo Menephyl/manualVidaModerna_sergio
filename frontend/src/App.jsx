@@ -12,7 +12,7 @@ import { Footer as FooterComponent } from './components/Footer.jsx'
 import { 
   CheckCircle, Star, BookOpen, Users, Heart, Lightbulb, Target, Shield, Sparkles, Zap, Smartphone,
   TrendingUp, X, CreditCard, QrCode, Copy, Instagram, Facebook, Mail, ExternalLink, MessageCircle,
-  ArrowRight, Gift, Clock, Download, Award, Loader2
+  ArrowRight, Gift, Clock, Download, Award, Loader2, Lock
 } from 'lucide-react'
 import ebookPdf from './assets/manual_moderno_com_ilustracoes_e_autor.pdf'
 import heroIllustration from './assets/hero-illustration.png'
@@ -46,17 +46,6 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  useEffect(() => {
-    const isMobile = window.innerWidth < 768; // md breakpoint
-    if (isModalOpen && isMobile) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    // Cleanup function
-    return () => { document.body.style.overflow = 'auto'; };
-  }, [isModalOpen]);
-
   // Polling para verificar o status do pagamento PIX
   useEffect(() => {
     if (modalPhase !== 'payment' || !pixData) return;
@@ -82,7 +71,7 @@ function App() {
 
   const handleGeneratePix = async () => {
     if (!buyerName || !buyerEmail) {
-      setPaymentError('Nome e E-mail são obrigatórios.');
+      setPaymentError('Por favor, preencha seu nome e e-mail para gerar o PIX.');
       return;
     }
     setPaymentError(null);
@@ -612,19 +601,35 @@ function App() {
 
             {/* --- FASE 1: INPUT DE DADOS --- */}
             {modalPhase === 'input' && (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="space-y-3">
                   <Input type="text" placeholder="Nome Completo" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} required />
                   <Input type="email" placeholder="Seu melhor e-mail" value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} required />
                 </div>
 
-                <p className="text-xs text-center text-gray-500 pt-2">Clique no botão abaixo para gerar um QR Code PIX e finalizar sua compra de forma segura.</p>
-
                 {paymentError && <p className="text-sm text-red-600 text-center">{paymentError}</p>}
 
-                <Button onClick={handleGeneratePix} disabled={isProcessing} className="w-full bg-amber-600 hover:bg-amber-700 text-lg py-3 h-auto">
-                  {isProcessing ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Gerar PIX para Pagamento'}
+                <Button onClick={handleGeneratePix} disabled={isProcessing} className="w-full bg-green-600 hover:bg-green-700 text-base py-2.5 h-auto">
+                  {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : '1. Pagar com PIX'}
                 </Button>
+
+                <div className="flex items-center text-center my-3">
+                  <div className="flex-grow border-t border-gray-300"></div>
+                  <span className="flex-shrink mx-4 text-sm font-medium text-gray-500">OU</span>
+                  <div className="flex-grow border-t border-gray-300"></div>
+                </div>
+
+                <Button asChild size="lg" className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold text-base py-2.5 h-auto">
+                  <a href="https://mpago.la/1VUrLsp" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+                    <CreditCard className="mr-2 h-5 w-5" />
+                    2. Pagar com Cartão ou Saldo
+                  </a>
+                </Button>
+
+                <div className="flex items-center justify-center gap-2 pt-2 text-xs text-gray-500">
+                  <Lock className="w-3 h-3" />
+                  <span>Ambiente 100% seguro. Pagamento processado pelo Mercado Pago.</span>
+                </div>
               </div>
             )}
 
