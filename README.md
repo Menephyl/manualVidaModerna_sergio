@@ -1,40 +1,82 @@
-# Manual da Vida Moderna - Landing Page
+# Manual da Vida Moderna - Projeto Full Stack
 
-Landing page moderna e interativa para o e-book "Manual da Vida Moderna" por Sérgio Dias Filho.
+Este é o repositório completo da landing page e do sistema de pagamento para o e-book "Manual da Vida Moderna" por Sérgio Dias Filho. O projeto é construído com uma arquitetura full-stack, separando o frontend da interface do usuário e o backend para processamento de pagamentos.
+
+## 🏛️ Estrutura do Projeto
+
+O projeto é um monorepo dividido em duas pastas principais:
+
+- **/frontend**: Uma aplicação moderna em React (construída com Vite) que renderiza a landing page, o modal de compra e interage com o usuário.
+- **/backend**: Uma API REST construída com Node.js e Express, responsável por se comunicar com o Mercado Pago para gerar e verificar pagamentos PIX.
 
 ## 🚀 Funcionalidades
 
-- ✅ Design artístico e teocrático com interatividade
-- ✅ Carrossel interativo de textos bíblicos no header
-- ✅ Carrossel de perfis do Instagram de leitores
-- ✅ Botão flutuante de WhatsApp
-- ✅ Modal de pagamento com opções PIX e Cartão de Crédito
-- ✅ Scroll reveal animations em todas as seções
-- ✅ Múltiplos CTAs (Call to Actions) estratégicos
-- ✅ Footer completo com links de contato
-- ✅ Totalmente responsivo para mobile, tablet e desktop
-- ✅ Integração com Mercado Pago para pagamentos
+### Frontend
+- ✅ Landing page moderna e interativa com design responsivo.
+- ✅ Animações de scroll para uma experiência de usuário mais dinâmica.
+- ✅ Modal de pagamento integrado para uma experiência de checkout transparente.
+- ✅ Geração de QR Code PIX em tempo real.
+- ✅ Verificação automática do status do pagamento (polling) para liberar o download.
+- ✅ Download direto do e-book em PDF após a confirmação do pagamento.
+
+### Backend
+- ✅ API REST com Node.js e Express para processamento de pagamentos.
+- ✅ Integração segura com o SDK do Mercado Pago.
+- ✅ Endpoint para criação de pagamentos PIX.
+- ✅ Endpoint para consulta de status de pagamento.
+- ✅ Endpoint de webhook para receber notificações do Mercado Pago (para futuras implementações, como envio de e-mail).
 
 ## 🛠️ Tecnologias
 
-- React 18.3.1
-- Vite 5.4.2
-- Tailwind CSS v4
-- Lucide React (ícones)
-- JavaScript/JSX
+### Frontend
+- **Framework**: React 18
+- **Build Tool**: Vite
+- **Estilização**: Tailwind CSS
+- **Ícones**: Lucide React
+
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Pagamentos**: Mercado Pago SDK
+- **Variáveis de Ambiente**: Dotenv
 
 ## 📦 Instalação
 
-1. Clone o repositório ou baixe os arquivos
-2. Instale as dependências:
+**Pré-requisitos:**
+- Node.js (v18 ou superior)
+- npm (ou yarn/pnpm)
+
+### 1. Configurando o Backend
 
 ```bash
+# 1. Navegue até a pasta do backend
+cd backend
+
+# 2. Crie um arquivo de variáveis de ambiente
+# (Copie .env.example se existir, ou crie um novo)
+touch .env
+
+# 3. Adicione seu Access Token do Mercado Pago ao arquivo .env
+# MERCADO_PAGO_ACCESS_TOKEN=SEU_TOKEN_AQUI
+
+# 4. Instale as dependências
 npm install
-```
 
-3. Inicie o servidor de desenvolvimento:
+# 5. Inicie o servidor do backend
+npm start
+```
+O servidor do backend estará rodando em `http://localhost:3001`.
+
+### 2. Configurando o Frontend
 
 ```bash
+# 1. Em um novo terminal, navegue até a pasta do frontend
+cd frontend
+
+# 2. Instale as dependências
+npm install
+
+# 3. Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
@@ -158,13 +200,9 @@ O projeto pode ser deployado em qualquer plataforma que suporte aplicações Rea
 
 **Yan Menephyl Works**
 - Instagram: [@yan_menephyl_works](https://www.instagram.com/yan_menephyl_works/)
-
+- Facebook: [Menephyl](https://www.facebook.com/menephyl.settings)
 ## 📞 Contato
 
 **Sérgio Dias Filho**
 - Instagram: [@sergiodiasfilho](https://www.instagram.com/sergiodiasfilho/)
-- Facebook: [Menephyl](https://www.facebook.com/menephyl.settings)
-- Email: contato@sergiodiasfilho.com
-- WhatsApp: +55 44 9716-4827
-
 
