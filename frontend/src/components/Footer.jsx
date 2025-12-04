@@ -1,5 +1,5 @@
 import { Instagram, Facebook, Mail, MessageCircle } from 'lucide-react';
-import { contactInfo, socialLinks } from '../content.js';
+import { contactInfo, socialLinks } from '../../content.js';
 
 export function Footer() {
   // Constrói o link do WhatsApp a partir do número em content.js

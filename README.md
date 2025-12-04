@@ -82,46 +82,20 @@ npm run dev
 
 4. Acesse no navegador: `http://localhost:5173`
 
-## 🔧 Configuração
+## 🔧 Configuração de Ambiente (Frontend)
 
-### Atualizar QR Code PIX
+O frontend se conecta ao backend usando variáveis de ambiente para diferenciar os ambientes de desenvolvimento e produção.
 
-1. Abra o arquivo `src/App.jsx`
-2. Localize a linha com `qrCodeImage`
-3. Substitua a URL do placeholder pela URL real do seu QR Code PIX
+1.  **Desenvolvimento**: O Vite usa um proxy (configurado em `vite.config.js`) para redirecionar as chamadas de API para `http://localhost:3001`. Nenhuma configuração adicional é necessária se o backend estiver rodando localmente.
 
-```javascript
-const qrCodeImage = "URL_DO_SEU_QR_CODE_AQUI"
-```
+2.  **Produção**: Para que o frontend em produção saiba onde encontrar a API, crie um arquivo chamado `.env.production` na raiz da pasta `/frontend`. Dentro dele, adicione a URL do seu backend na Render:
 
-### Atualizar Código PIX
+    ```dotenv
+    # c:/Real_projects/manualVidaModerna_sergio/frontend/.env.production
+    VITE_API_URL=https://manualvidamoderna-sergio.onrender.com
+    ```
 
-1. Abra o arquivo `src/App.jsx`
-2. Localize a linha com `pixCode`
-3. Substitua pelo código PIX real
-
-```javascript
-const pixCode = "SEU_CODIGO_PIX_AQUI"
-```
-
-### Atualizar Links de Pagamento
-
-1. Abra o arquivo `src/App.jsx`
-2. Atualize os links conforme necessário:
-
-```javascript
-const pixLink = "SEU_LINK_PIX_AQUI"
-const mercadoPagoLink = "https://mpago.la/2XrXfQB" // Já configurado
-```
-
-### Atualizar Email
-
-1. Abra o arquivo `src/App.jsx`
-2. Localize `emailSergio` e atualize:
-
-```javascript
-const emailSergio = "seu-email@exemplo.com"
-```
+Isso garante que, ao executar `npm run build`, o código final aponte para a API correta em produção. Todas as chaves e links de pagamento são gerenciados dinamicamente pelo backend.
 
 ## 📱 Responsividade
 
@@ -205,4 +179,3 @@ O projeto pode ser deployado em qualquer plataforma que suporte aplicações Rea
 
 **Sérgio Dias Filho**
 - Instagram: [@sergiodiasfilho](https://www.instagram.com/sergiodiasfilho/)
-
