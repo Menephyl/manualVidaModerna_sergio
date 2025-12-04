@@ -34,8 +34,8 @@ app.post('/api/checkout/pix', async (req, res) => {
       payer: {
         email: email,
       },
-      // A notification_url será configurada quando implementarmos o webhook.
-      // notification_url: `${process.env.WEBHOOK_HOST}/api/webhook`,
+      // URL que o Mercado Pago notificará quando o status do pagamento mudar.
+      notification_url: `${process.env.WEBHOOK_HOST}/api/webhook`,
     };
 
     const result = await payment.create({ body: paymentData });

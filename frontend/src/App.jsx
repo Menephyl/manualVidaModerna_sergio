@@ -19,6 +19,7 @@ import ebookCover from './assets/ebook-cover.png'
 import { contactInfo, benefits } from '../content.js'
 import { PaymentPix } from './components/PaymentPix.jsx'
 import { Footer } from './components/Footer.jsx'
+import apiClient from '../api/api.js'
 import { FAQ } from './components/FAQ.jsx'
 
 function App() {
@@ -49,11 +50,8 @@ function App() {
 
     const intervalId = setInterval(async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-        const response = await fetch(`${apiUrl}/api/payment/${pixData.id}`);
-        const data = await response.json();
-
-        if (data.status === 'approved') {
+        const paymentStatus = await apiClient(`/payment/${pixData.id}`);
+        if (paymentStatus.status === 'approved') {
           setModalPhase('success');
           clearInterval(intervalId);
         }
@@ -75,22 +73,13 @@ function App() {
     setIsProcessing(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiUrl}/api/checkout/pix`, {
+      const data = await apiClient('/checkout/pix', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: buyerEmail,
           amount: 46.99, // Valor do produto
         }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Falha ao gerar o código PIX.');
-      }
-
-      const data = await response.json();
       setPixData(data);
       setModalPhase('payment'); // Muda para a fase de exibição do PIX
     } catch (err) {
