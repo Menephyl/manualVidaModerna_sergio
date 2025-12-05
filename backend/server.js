@@ -11,6 +11,11 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+// Health Check
+app.get('/', (req, res) => {
+  res.status(200).send('Backend is running');
+});
+
 // Inicialize o cliente do Mercado Pago com seu Access Token
 const client = new MercadoPagoConfig({ accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN });
 const payment = new Payment(client);
