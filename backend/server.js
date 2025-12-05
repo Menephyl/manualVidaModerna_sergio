@@ -6,7 +6,7 @@ import { sendSaleNotificationEmail } from './services/emailService.js';
 
 // 1. Backend Setup
 const app = express();
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -24,7 +24,6 @@ app.get('/', (req, res) => {
 
 // Inicialize o cliente do Mercado Pago com seu Access Token
 const client = new MercadoPagoConfig({ accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN });
-console.log('MP Access Token loaded:', process.env.MERCADO_PAGO_ACCESS_TOKEN ? `${process.env.MERCADO_PAGO_ACCESS_TOKEN.substring(0, 10)}...` : 'NOT LOADED');
 const payment = new Payment(client);
 
 /**
