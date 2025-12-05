@@ -15,7 +15,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
  * @returns {Promise<any>} - A resposta da API em formato JSON.
  */
 const apiClient = async (endpoint, options = {}) => {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+  const response = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,

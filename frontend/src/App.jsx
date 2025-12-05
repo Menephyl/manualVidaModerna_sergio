@@ -6,7 +6,7 @@ import { Badge } from './components/ui/badge.jsx'
 import { BibleVerseCarousel } from './components/BibleVerseCarousel.jsx'
 import { InstagramCarousel } from './components/InstagramCarousel.jsx'
 import { ScrollReveal } from './components/ScrollReveal.jsx'
-import { 
+import {
   CheckCircle, Star, BookOpen, Users, Heart, Lightbulb, Target, Shield, Sparkles, Zap, Smartphone,
   TrendingUp, X, CreditCard, QrCode, Copy, Instagram, Facebook, Mail, ExternalLink, MessageCircle,
   ArrowRight, Gift, Clock, Download, Award, Loader2, Lock
@@ -30,7 +30,7 @@ function App() {
   const [buyerName, setBuyerName] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
   const [paymentError, setPaymentError] = useState(null); // Para guardar mensagens de erro
-  
+
   // Estados para o pagamento PIX (integrados do PaymentPix.jsx)
   const [pixData, setPixData] = useState(null);
 
@@ -73,7 +73,7 @@ function App() {
     setIsProcessing(true);
 
     try {
-      const data = await apiClient('/checkout/pix', {
+      const data = await apiClient('https://api.ordemdoseraphim.com/api/checkout/pix', {
         method: 'POST',
         body: JSON.stringify({
           email: buyerEmail,
@@ -137,7 +137,7 @@ function App() {
               Por Sérgio Dias Filho
             </Badge>
           </div>
-          
+
         </div>
       </header>
 
@@ -148,7 +148,7 @@ function App() {
           <div className="absolute inset-0 bg-gradient-to-br from-amber-100/40 via-orange-50/30 to-yellow-100/40"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-300/20 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-300/20 rounded-full blur-3xl"></div>
-          
+
           <div className="max-w-[1400px] mx-auto relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 xl:gap-20 items-center">
               <div className="text-center lg:text-left max-w-2xl lg:max-w-none mx-auto lg:mx-0">
@@ -156,7 +156,7 @@ function App() {
                   <Sparkles className="w-4 h-4 mr-2" />
                   Lançamento Especial
                 </Badge>
-                
+
                 <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-gray-900 mb-8 leading-tight">
                   Desvende os Segredos da{' '}
                   <span className="text-amber-600 relative inline-block">
@@ -165,14 +165,14 @@ function App() {
                   </span>{' '}
                   para uma Vida Moderna Plena
                 </h1>
-                
+
                 <p className="text-lg md:text-xl lg:text-2xl text-gray-700 mb-10 max-w-3xl mx-auto lg:mx-0 leading-relaxed">
                   O guia definitivo para navegar pelos desafios do século XXI com propósito, clareza e uma base sólida de princípios atemporais.
                 </p>
-                
+
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center mb-10">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-8 md:px-10 py-4 md:py-5 text-base md:text-lg font-bold shadow-2xl hover:shadow-amber-500/50 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto rounded-xl"
                     onClick={openModal}
                   >
@@ -185,7 +185,7 @@ function App() {
                     <span className="text-sm md:text-base font-medium">Download Imediato</span>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-wrap justify-center lg:justify-start items-center gap-6 text-sm md:text-base">
                   <div className="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-lg shadow-md">
                     <div className="flex items-center gap-1">
@@ -202,14 +202,14 @@ function App() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="relative flex justify-center lg:justify-end">
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-500  blur-3xl opacity-30 animate-pulse"></div>
                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500 max-w-md xl:max-w-lg">
-                  <img 
-                    src={heroIllustration} 
+                  <img
+                    src={heroIllustration}
                     loading="lazy"
-                    alt="Sabedoria Ancestral e Vida Moderna" 
+                    alt="Sabedoria Ancestral e Vida Moderna"
                     className="w-full rounded-3xl shadow-2xl border-4 border-white/50"
                   />
                 </div>
@@ -228,8 +228,8 @@ function App() {
           </div>
           <div className="max-w-[1200px] mx-auto text-center relative z-10">
             <p className="text-xl md:text-2xl lg:text-3xl font-semibold mb-8">Não perca esta oportunidade única de transformar sua vida!</p>
-            <Button 
-              size="lg"   
+            <Button
+              size="lg"
               variant="primary"
               className="bg-orange-400 cursor-pointer px-10 py-5 text-lg md:text-xl font-bold  hover:transition-all duration-300 transform hover:scale-105 rounded-xl"
               onClick={openModal}
@@ -254,7 +254,7 @@ function App() {
                 Muitas pessoas enfrentam esses desafios diariamente
               </p>
             </div>
-            
+
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 xl:gap-20 items-center">
               <div className="order-2 lg:order-1 space-y-6">
                 {[
@@ -273,14 +273,14 @@ function App() {
                   </ScrollReveal>
                 ))}
               </div>
-              
+
               <div className="order-1 lg:order-2 relative flex justify-center lg:justify-end">
                 <div className="absolute inset-0 bg-gradient-to-r from-red-200 to-orange-200 rounded-full blur-3xl opacity-40"></div>
                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500 max-w-md xl:max-w-lg">
-                  <img 
-                    src={problemIllustration} 
+                  <img
+                    src={problemIllustration}
                     loading="lazy"
-                    alt="Pessoa perdida no caos moderno" 
+                    alt="Pessoa perdida no caos moderno"
                     className="w-full rounded-3xl shadow-2xl border-4 border-white/50"
                   />
                 </div>
@@ -307,7 +307,7 @@ function App() {
                   />
                 </div>
               </div>
-              
+
               <div className="max-w-2xl mx-auto lg:mx-0">
                 <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-8">
                   A Solução Está na Sabedoria que Atravessou Milênios
@@ -331,7 +331,7 @@ function App() {
                 </div>
               </div>
             </div>
-            
+
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
               {benefits.map((benefit, index) => (
                 <ScrollReveal key={index} direction="up" delay={index * 100}>
@@ -360,7 +360,7 @@ function App() {
         <section className="py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-12 xl:px-20 bg-white border-y-4 border-amber-300 shadow-lg">
           <div className="max-w-[1200px] mx-auto text-center">
             <p className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-8 lg:mb-10">Transforme sua vida hoje mesmo!</p>
-            <Button 
+            <Button
               size="lg"
               className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-10 py-5 text-lg md:text-xl font-bold shadow-2xl hover:shadow-amber-500/50 transition-all duration-300 transform hover:scale-105 rounded-xl"
               onClick={openModal}
@@ -385,7 +385,7 @@ function App() {
                 Conteúdo transformador que vai impactar sua vida
               </p>
             </div>
-            
+
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 xl:gap-20 items-start">
               <div className="space-y-6">
                 {[
@@ -407,14 +407,14 @@ function App() {
                   </ScrollReveal>
                 ))}
               </div>
-              
+
               <div className="relative flex justify-center lg:justify-end">
                 <div className="absolute inset-0 bg-gradient-to-r from-green-200 to-blue-200 rounded-full blur-3xl opacity-40"></div>
                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500 max-w-md xl:max-w-lg">
-                  <img 
-                    src={transformationIllustration} 
+                  <img
+                    src={transformationIllustration}
                     loading="lazy"
-                    alt="Transformação e crescimento pessoal" 
+                    alt="Transformação e crescimento pessoal"
                     className="w-full rounded-3xl shadow-2xl border-4 border-white/50"
                   />
                   <div className="absolute -top-4 -right-4 bg-white rounded-2xl p-4 shadow-2xl hidden lg:block animate-bounce">
@@ -432,21 +432,21 @@ function App() {
         <section className="py-20 md:py-24 lg:py-28 px-4 sm:px-6 lg:px-12 xl:px-20 bg-gradient-to-br from-amber-100 via-orange-100 to-yellow-100 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-300/30 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-300/30 rounded-full blur-3xl"></div>
-          
+
           <div className="max-w-[1400px] mx-auto relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 xl:gap-20 items-center">
               <div className="relative flex justify-center lg:justify-start">
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-3xl blur-3xl opacity-30 animate-pulse"></div>
                 <div className="relative z-10 transform hover:scale-105 transition-transform duration-500 max-w-sm xl:max-w-md">
-                  <img 
-                    src={ebookCover} 
+                  <img
+                    src={ebookCover}
                     loading="lazy"
-                    alt="Capa do Manual da Vida Moderna" 
+                    alt="Capa do Manual da Vida Moderna"
                     className="w-full rounded-3xl shadow-2xl border-4 border-white/50"
                   />
                 </div>
               </div>
-              
+
               <div className="text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
                 <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-8">
                   Seu Guia Completo para uma Vida com Propósito
@@ -454,7 +454,7 @@ function App() {
                 <p className="text-lg md:text-xl lg:text-2xl text-gray-700 mb-10 leading-relaxed">
                   Mais de 200 páginas de sabedoria prática, divididas em capítulos organizados que abordam desde os fundamentos da existência até as estratégias para uma vida plena no século XXI.
                 </p>
-                
+
                 <div className="grid grid-cols-2 gap-5 md:gap-7 mb-10 max-w-md mx-auto lg:mx-0">
                   {[
                     { number: "9", label: "Capítulos" },
@@ -468,9 +468,9 @@ function App() {
                     </div>
                   ))}
                 </div>
-                
-                <Button 
-                  size="lg" 
+
+                <Button
+                  size="lg"
                   className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-8 md:px-10 py-4 md:py-5 text-base md:text-lg font-bold shadow-2xl hover:shadow-amber-500/50 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto rounded-xl"
                   onClick={openModal}
                 >
@@ -515,7 +515,7 @@ function App() {
             <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse"></div>
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
           </div>
-          
+
           <div className="max-w-[1200px] mx-auto text-center relative z-10">
             <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-8 lg:mb-10">
               Transforme Sua Vida Hoje Mesmo
@@ -523,7 +523,7 @@ function App() {
             <p className="text-xl md:text-2xl lg:text-3xl mb-12 lg:mb-14 opacity-95 leading-relaxed">
               Não deixe para amanhã a oportunidade de descobrir os segredos para uma vida plena e com propósito.
             </p>
-            
+
             <div className="relative max-w-2xl mx-auto">
               {/* Caixa de preço com z-base */}
               <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 md:p-10 lg:p-12 mb-6 border-2 border-white/20 shadow-2xl z-10 relative">
@@ -539,35 +539,35 @@ function App() {
 
               {/* Botão centralizado abaixo da caixa de preço, com z acima */}
               <div className="mt-6 z-20 relative flex justify-center">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-black text-white hover:bg-gray-900 px-12 md:px-16 lg:px-20 py-4 md:py-5  md:text-2xl font-bold shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 rounded-2xl"
                   onClick={openModal}
                 >
                   <Gift className="w-6 h-6 mr-3" />
-                  Garantir Meu Exemplar 
+                  Garantir Meu Exemplar
                   <ArrowRight className="w-6 h-6 ml-3" />
                 </Button>
               </div>
             </div>
-            
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-10 text-sm md:text-base max-w-4xl mx-auto mt-12">
-                    <div className="flex flex-col items-center gap-2 bg-white/10 px-4 py-3 rounded-lg backdrop-blur-sm">
-                      <CheckCircle className="w-6 h-6" />
-                      <span>Acesso Imediato</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-2 bg-white/10 px-4 py-3 rounded-lg backdrop-blur-sm">
-                      <Download className="w-6 h-6" />
-                      <span>Download em PDF</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-2 bg-white/10 px-4 py-3 rounded-lg backdrop-blur-sm">
-                      <Award className="w-6 h-6" />
-                      <span>Garantia de Satisfação</span>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </ScrollReveal>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-10 text-sm md:text-base max-w-4xl mx-auto mt-12">
+              <div className="flex flex-col items-center gap-2 bg-white/10 px-4 py-3 rounded-lg backdrop-blur-sm">
+                <CheckCircle className="w-6 h-6" />
+                <span>Acesso Imediato</span>
+              </div>
+              <div className="flex flex-col items-center gap-2 bg-white/10 px-4 py-3 rounded-lg backdrop-blur-sm">
+                <Download className="w-6 h-6" />
+                <span>Download em PDF</span>
+              </div>
+              <div className="flex flex-col items-center gap-2 bg-white/10 px-4 py-3 rounded-lg backdrop-blur-sm">
+                <Award className="w-6 h-6" />
+                <span>Garantia de Satisfação</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
 
       {/* Modal de Pagamento */}
       {isModalOpen && (
@@ -639,7 +639,7 @@ function App() {
                     Baixar meu E-book
                   </a>
                 </Button>
-                 <p className="text-xs text-gray-500 pt-2">Uma cópia também será enviada para o seu e-mail.</p>
+                <p className="text-xs text-gray-500 pt-2">Uma cópia também será enviada para o seu e-mail.</p>
               </div>
             )}
 
