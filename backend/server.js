@@ -6,7 +6,7 @@ import { sendSaleNotificationEmail } from './services/emailService.js';
 
 // 1. Backend Setup
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 80;
 
 app.use(cors());
 app.use(express.json());
