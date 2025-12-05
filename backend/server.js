@@ -13,7 +13,7 @@ app.use(express.json());
 
 // Health Check
 app.get('/', (req, res) => {
-  res.status(200).send('Backend is running');
+  res.status(200).send('Backend is running and healthy!');
 });
 
 // Inicialize o cliente do Mercado Pago com seu Access Token
