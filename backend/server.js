@@ -58,6 +58,9 @@ app.post('/api/checkout/pix', async (req, res) => {
     });
   } catch (error) {
     console.error('Erro ao criar pagamento PIX:', error);
+    if (error.cause) {
+      console.error('Detalhes do erro MP:', JSON.stringify(error.cause, null, 2));
+    }
     res.status(500).json({ error: 'Falha ao processar o pagamento.' });
   }
 });
