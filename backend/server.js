@@ -6,8 +6,8 @@ import { sendSaleNotificationEmail } from './services/emailService.js';
 
 // 1. Backend Setup
 const app = express();
-const port = process.env.PORT || 3001;
 
+const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
@@ -44,7 +44,7 @@ app.post('/api/checkout/pix', async (req, res) => {
       payment_method_id: 'pix',
       payer: {
         email: email,
-      },
+      },  
       // URL que o Mercado Pago notificará quando o status do pagamento mudar.
       notification_url: `${process.env.WEBHOOK_HOST}/api/webhook`,
     };
