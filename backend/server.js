@@ -44,9 +44,9 @@ app.post('/api/checkout/pix', async (req, res) => {
       payment_method_id: 'pix',
       payer: {
         email: email,
-      },  
+      },
       // URL que o Mercado Pago notificará quando o status do pagamento mudar.
-      notification_url: `${process.env.WEBHOOK_HOST}/api/webhook`,
+      notification_url: `${process.env.WEBHOOK_HOST || 'https://google.com'}/api/webhook`,
     };
 
     const result = await payment.create({ body: paymentData });
@@ -61,7 +61,12 @@ app.post('/api/checkout/pix', async (req, res) => {
     if (error.cause) {
       console.error('Detalhes do erro MP:', JSON.stringify(error.cause, null, 2));
     }
-    res.status(500).json({ error: 'Falha ao processar o pagamento.' });
+    // Return error message to frontend for easier debugging
+    res.status(500).json({
+      error: 'Falha ao processar o pagamento.',
+      details: error.message,
+      cause: error.cause
+    });
   }
 });
 
@@ -69,14 +74,24 @@ app.post('/api/checkout/pix', async (req, res) => {
  * Rota para o frontend consultar o status do pagamento.
  */
 app.get('/api/payment/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const paymentStatus = await payment.get({ id });
-        res.json({ status: paymentStatus.status });
-    } catch (error) {
-        console.error('Erro ao consultar status do pagamento:', error);
-        res.status(500).json({ error: 'Falha ao consultar o pagamento.' });
+  try {
+    const { id } = req.params;
+    const paymentStatus = await payment.get({ id });
+
+    // Em desenvolvimento local, o webhook não funciona.
+    // Então, se o frontend consultar e estiver aprovado, enviamos o email por aqui.
+    if (paymentStatus.status === 'approved') {
+      // Tenta enviar o e-mail (idealmente dacabeveria verificar se já foi enviado para não duplicar, 
+      // mas para teste local "simples e fácil" isso garante que funcione).
+      console.log(`Pagamento ${id} verificado como APROVADO via polling. Tentando enviar e-mail...`);
+      sendSaleNotificationEmail(paymentStatus).catch(err => console.error("Erro ao enviar email via polling:", err));
     }
+
+    res.json({ status: paymentStatus.status });
+  } catch (error) {
+    console.error('Erro ao consultar status do pagamento:', error);
+    res.status(500).json({ error: 'Falha ao consultar o pagamento.' });
+  }
 });
 
 /**

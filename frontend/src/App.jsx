@@ -19,7 +19,7 @@ import ebookCover from './assets/ebook-cover.png'
 import { contactInfo, benefits } from '../content.js'
 import { PaymentPix } from './components/PaymentPix.jsx'
 import { Footer } from './components/Footer.jsx'
-import apiClient from '../api/api.js'
+import apiClient from './api/api.js'
 import { FAQ } from './components/FAQ.jsx'
 
 function App() {
@@ -50,7 +50,7 @@ function App() {
 
     const intervalId = setInterval(async () => {
       try {
-        const paymentStatus = await apiClient(`/payment/${pixData.id}`);
+        const paymentStatus = await apiClient(`/api/payment/${pixData.id}`);
         if (paymentStatus.status === 'approved') {
           setModalPhase('success');
           clearInterval(intervalId);
@@ -73,11 +73,11 @@ function App() {
     setIsProcessing(true);
 
     try {
-      const data = await apiClient('https://api.ordemdoseraphim.com/api/checkout/pix', {
+      const data = await apiClient('/api/checkout/pix', {
         method: 'POST',
         body: JSON.stringify({
           email: buyerEmail,
-          amount: 46.99, // Valor do produto
+          amount: 5.00, // Valor do produto para teste
         }),
       });
       setPixData(data);
