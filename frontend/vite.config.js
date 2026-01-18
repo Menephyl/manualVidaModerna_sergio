@@ -11,6 +11,7 @@ export default defineConfig({
     },
   },
   server: {
+    host: true,
     proxy: {
       '/api': {
         target: 'http://localhost:3000', // The address of our new API server

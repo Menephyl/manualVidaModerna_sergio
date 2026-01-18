@@ -6,7 +6,7 @@
 
 // Em produção, `import.meta.env.VITE_API_URL` será 'https://manualvidamoderna-sergio.onrender.com'
 // Em desenvolvimento, será `undefined`, e usaremos o caminho relativo '/api' que o Vite irá redirecionar (proxy).
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = '';
 
 /**
  * Função genérica para realizar chamadas fetch.
