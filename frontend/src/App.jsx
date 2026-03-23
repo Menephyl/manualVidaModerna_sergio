@@ -452,7 +452,7 @@ function App() {
                   Seu Guia Completo para uma Vida com Propósito
                 </h2>
                 <p className="text-lg md:text-xl lg:text-2xl text-gray-700 mb-10 leading-relaxed">
-                  Mais de 200 páginas de sabedoria prática, divididas em capítulos organizados que abordam desde os fundamentos da existência até as estratégias para uma vida plena no século XXI.
+                  Mais de 80 páginas de sabedoria prática, divididas em capítulos organizados que abordam desde os fundamentos da existência até as estratégias para uma vida plena no século XXI.
                 </p>
 
                 <div className="grid grid-cols-2 gap-5 md:gap-7 mb-10 max-w-md mx-auto lg:mx-0">
@@ -529,7 +529,7 @@ function App() {
               <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 md:p-10 lg:p-12 mb-6 border-2 border-white/20 shadow-2xl z-10 relative">
                 <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 opacity-90">De R$ 97,00 por apenas</div>
                 <div className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 bg-gradient-to-r from-white to-amber-100 bg-clip-text text-transparent">
-                  R$ 46,99
+                  R$ 12,59
                 </div>
                 <div className="text-lg md:text-xl lg:text-2xl opacity-90 flex items-center justify-center gap-2">
                   <Clock className="w-5 h-5 lg:w-6 lg:h-6" />
