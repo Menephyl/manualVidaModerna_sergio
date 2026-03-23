@@ -77,7 +77,7 @@ function App() {
         method: 'POST',
         body: JSON.stringify({
           email: buyerEmail,
-          amount: 46.99, // Valor do produto
+          amount: 12.59, // Valor do produto
         }),
       });
       setPixData(data);
@@ -126,7 +126,7 @@ function App() {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
           <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 mb-2">
             <div className="flex items-center gap-3">
-              <div className="hidden md:block w-10 h-10 bg-amber-200/20 rounded-lg flex items-center justify-center">
+              <div className="hidden md:flex w-10 h-10 bg-amber-200/20 rounded-lg items-center justify-center">
                 <BookOpen className="w-10 h-10 text-white" />
               </div>
               <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white tracking-tight">
